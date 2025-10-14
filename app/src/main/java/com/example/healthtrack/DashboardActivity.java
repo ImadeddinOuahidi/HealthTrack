@@ -45,37 +45,41 @@ public class DashboardActivity extends AppCompatActivity {
 
 
     private void setupNavigationButtons() {
-        hydrationButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, HydrationActivity.class);
-            startActivity(intent);
-        });
+    hydrationButton.setOnClickListener(v -> {
+        Intent intent = new Intent(DashboardActivity.this, HydrationActivity.class);
+        startActivity(intent);
+    });
 
-        sleepButton.setOnClickListener(v -> {
+    sleepButton.setOnClickListener(v -> {
+        Intent intent = new Intent(DashboardActivity.this, SleepActivity.class);
+        startActivity(intent);
+    });
 
-        });
+    stepsButton.setOnClickListener(v -> {
+        // You can add StepActivity later
+    });
 
-        stepsButton.setOnClickListener(v -> {
+    goalsButton.setOnClickListener(v -> {
+        Intent intent = new Intent(DashboardActivity.this, GoalsActivity.class);
+        startActivity(intent);
+    });
 
-        });
+    focusTimerButton.setOnClickListener(v -> {
+        // Future: Add FocusTimerActivity
+    });
 
-        goalsButton.setOnClickListener(v -> {
+    achievementsButton.setOnClickListener(v -> {
+        // Future: Add AchievementsActivity
+    });
 
-        });
+    reportsButton.setOnClickListener(v -> {
+        // Future: Add ReportsActivity
+    });
 
-        focusTimerButton.setOnClickListener(v -> {
+    notificationsButton.setOnClickListener(v -> {
+        // Future: Add NotificationsActivity
+    });
 
-        });
 
-        achievementsButton.setOnClickListener(v -> {
-
-        });
-
-        reportsButton.setOnClickListener(v -> {
-
-        });
-
-        notificationsButton.setOnClickListener(v -> {
-
-        });
     }
 }

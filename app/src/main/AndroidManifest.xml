@@ -26,6 +26,10 @@
         <activity
             android:name=".HydrationActivity"
             android:exported="false" />
+        <activity
+             android:name=".SleepActivity" />
+        <activity 
+             android:name=".GoalsActivity" />
     </application>
 
 </manifest>
