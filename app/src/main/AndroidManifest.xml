@@ -31,17 +31,10 @@
         <activity
             android:name=".HydrationActivity"
             android:exported="false" />
-
-        <!-- 👇 Relaxation activity (Focus Timer) -->
         <activity
-            android:name=".RelaxationActivity"
-            android:exported="false" />
-
-        <!-- 👇 Step Counter activity -->
-        <activity
-            android:name=".StepCounterActivity"
-            android:exported="false" />
-
+             android:name=".SleepActivity" />
+        <activity 
+             android:name=".GoalsActivity" />
     </application>
 
 </manifest>

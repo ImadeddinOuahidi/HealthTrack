@@ -41,47 +41,41 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void setupNavigationButtons() {
-        // Navigate to Hydration screen
-        hydrationButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, HydrationActivity.class);
-            startActivity(intent);
-        });
+    hydrationButton.setOnClickListener(v -> {
+        Intent intent = new Intent(DashboardActivity.this, HydrationActivity.class);
+        startActivity(intent);
+    });
 
-        // Navigate to Sleep screen (to be added later)
-        sleepButton.setOnClickListener(v -> {
+    sleepButton.setOnClickListener(v -> {
+        Intent intent = new Intent(DashboardActivity.this, SleepActivity.class);
+        startActivity(intent);
+    });
 
-        });
+    stepsButton.setOnClickListener(v -> {
+        // You can add StepActivity later
+    });
 
-        // Navigate to Step Counter screen
-        stepsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, StepCounterActivity.class);
-            startActivity(intent);
-        });
+    goalsButton.setOnClickListener(v -> {
+        Intent intent = new Intent(DashboardActivity.this, GoalsActivity.class);
+        startActivity(intent);
+    });
 
-        // Navigate to Goals screen (to be added later)
-        goalsButton.setOnClickListener(v -> {
+    focusTimerButton.setOnClickListener(v -> {
+        // Future: Add FocusTimerActivity
+    });
 
-        });
+    achievementsButton.setOnClickListener(v -> {
+        // Future: Add AchievementsActivity
+    });
 
-        // Navigate to Relaxation (Focus Timer) screen
-        focusTimerButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, RelaxationActivity.class);
-            startActivity(intent);
-        });
+    reportsButton.setOnClickListener(v -> {
+        // Future: Add ReportsActivity
+    });
 
-        // Achievements screen (to be added later)
-        achievementsButton.setOnClickListener(v -> {
+    notificationsButton.setOnClickListener(v -> {
+        // Future: Add NotificationsActivity
+    });
 
-        });
 
-        // Reports screen (to be added later)
-        reportsButton.setOnClickListener(v -> {
-
-        });
-
-        // Notifications screen (to be added later)
-        notificationsButton.setOnClickListener(v -> {
-
-        });
     }
 }
