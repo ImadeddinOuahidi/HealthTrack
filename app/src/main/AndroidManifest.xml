@@ -11,21 +11,37 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HealthTrack">
+
+        <!-- 👇 Main screen (launch activity) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 👇 Dashboard -->
         <activity
             android:name=".DashboardActivity"
             android:exported="false" />
+
+        <!-- 👇 Hydration tracker -->
         <activity
             android:name=".HydrationActivity"
             android:exported="false" />
+
+        <!-- 👇 Relaxation activity (Focus Timer) -->
+        <activity
+            android:name=".RelaxationActivity"
+            android:exported="false" />
+
+        <!-- 👇 Step Counter activity -->
+        <activity
+            android:name=".StepCounterActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
