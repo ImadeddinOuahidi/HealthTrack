@@ -67,14 +67,19 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         achievementsButton.setOnClickListener(v -> {
-
+            Intent intent = new Intent(DashboardActivity.this, RewardsActivity.class);
+            startActivity(intent);
         });
 
         reportsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, ReportsActivity.class);
+            startActivity(intent);
 
         });
 
         notificationsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, NotificationActivity.class);
+            startActivity(intent);
 
         });
     }
