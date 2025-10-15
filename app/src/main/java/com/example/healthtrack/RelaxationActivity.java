@@ -1,4 +1,4 @@
-package com.example.healthtrack; // change to your package name
+package com.example.healthtrack;
 
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -12,7 +12,7 @@ public class RelaxationActivity extends AppCompatActivity {
     private Button btnStart, btnStop, btnReset;
     private CountDownTimer countDownTimer;
     private boolean isRunning = false;
-    private long timeLeftInMillis = 25 * 60 * 1000; // 25 minutes
+    private long timeLeftInMillis = 25 * 60 * 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

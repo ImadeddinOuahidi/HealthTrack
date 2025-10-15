@@ -1,4 +1,4 @@
-package com.example.healthtrack; // change to your package name
+package com.example.healthtrack;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -19,7 +19,7 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
 
     private boolean isSensorPresent = false;
     private int stepCount = 0;
-    private int dailyGoal = 10000; // Example daily goal
+    private int dailyGoal = 10000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

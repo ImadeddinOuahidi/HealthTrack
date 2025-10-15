@@ -37,7 +37,7 @@
 
             <LinearLayout
                 android:id="@+id/userInfoLayout"
-                android:layout_width="wrap_content"
+                android:layout_width="189dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
@@ -46,28 +46,28 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Welcome back,"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"/>
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/userNameTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Imad"
+                    android:textColor="@android:color/black"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"/>
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <ImageButton
                 android:id="@+id/settingsIBTN"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:src="@android:drawable/ic_menu_manage"
-                android:background="@android:color/transparent"
+                android:layout_width="116dp"
+                android:layout_height="49dp"
                 android:layout_gravity="end"
                 android:layout_weight="1"
-                android:contentDescription="Settings"/>
+                android:background="@android:color/transparent"
+                android:contentDescription="Settings"
+                android:src="@android:drawable/ic_menu_manage" />
         </LinearLayout>
 
         <LinearLayout
@@ -148,60 +148,62 @@
 
         <GridLayout
             android:id="@+id/navigationGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="317dp"
+            android:layout_height="240dp"
+            android:alignmentMode="alignMargins"
             android:columnCount="2"
             android:rowCount="4"
-            android:alignmentMode="alignMargins"
             android:useDefaultMargins="true">
 
             <Button
                 android:id="@+id/hydrationBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Hydration"/>
+                android:layout_row="0"
+                android:layout_column="0"
+                android:text="Hydration" />
 
             <Button
                 android:id="@+id/sleepBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Sleep"/>
+                android:text="Sleep" />
 
             <Button
                 android:id="@+id/stepsBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Steps"/>
+                android:text="Steps" />
 
             <Button
                 android:id="@+id/goalsBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Goals"/>
+                android:text="Goals" />
 
             <Button
                 android:id="@+id/focusTimerBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Focus Timer"/>
+                android:text="Focus Timer" />
 
             <Button
                 android:id="@+id/achievementsBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Achievements"/>
+                android:text="Achievements" />
 
             <Button
                 android:id="@+id/reportsBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Reports"/>
+                android:text="Reports" />
 
             <Button
                 android:id="@+id/notificationsBTN"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:text="Notifications"/>
+                android:text="Notifications" />
         </GridLayout>
     </LinearLayout>
 </ScrollView>

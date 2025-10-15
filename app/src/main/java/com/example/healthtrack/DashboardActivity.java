@@ -27,7 +27,7 @@ public class DashboardActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize buttons
+
         hydrationButton = findViewById(R.id.hydrationBTN);
         sleepButton = findViewById(R.id.sleepBTN);
         stepsButton = findViewById(R.id.stepsBTN);
@@ -52,7 +52,8 @@ public class DashboardActivity extends AppCompatActivity {
     });
 
     stepsButton.setOnClickListener(v -> {
-        // You can add StepActivity later
+        Intent intent = new Intent(DashboardActivity.this, StepCounterActivity.class);
+        startActivity(intent);
     });
 
     goalsButton.setOnClickListener(v -> {
@@ -61,40 +62,24 @@ public class DashboardActivity extends AppCompatActivity {
     });
 
     focusTimerButton.setOnClickListener(v -> {
-        // Future: Add FocusTimerActivity
+        Intent intent = new Intent(DashboardActivity.this, RelaxationActivity.class);
+        startActivity(intent);
     });
 
     achievementsButton.setOnClickListener(v -> {
-        // Future: Add AchievementsActivity
+        Intent intent = new Intent(DashboardActivity.this, RewardsActivity.class);
+        startActivity(intent);
     });
 
     reportsButton.setOnClickListener(v -> {
-        // Future: Add ReportsActivity
+        Intent intent = new Intent(DashboardActivity.this, ReportsActivity.class);
+        startActivity(intent);
     });
 
     notificationsButton.setOnClickListener(v -> {
-        // Future: Add NotificationsActivity
+        Intent intent = new Intent(DashboardActivity.this, NotificationActivity.class);
+        startActivity(intent);
     });
 
-
-<<<<<<< HEAD
-        achievementsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, RewardsActivity.class);
-            startActivity(intent);
-        });
-
-        reportsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, ReportsActivity.class);
-            startActivity(intent);
-
-        });
-
-        notificationsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(DashboardActivity.this, NotificationActivity.class);
-            startActivity(intent);
-
-        });
-=======
->>>>>>> 15287ea830d1ba5781b6f877f874d244bee14b11
     }
 }

@@ -1,4 +1,4 @@
-package com.example.healthtrack;  // <-- replace with your actual package name
+package com.example.healthtrack;
 
 import android.os.Bundle;
 import android.widget.ProgressBar;
@@ -11,7 +11,7 @@ public class GoalsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_goals); // links to activity_goals.xml
+        setContentView(R.layout.activity_goals);
 
         // Initialize ProgressBars
         progressHydrationGoal = findViewById(R.id.progressHydrationGoal);

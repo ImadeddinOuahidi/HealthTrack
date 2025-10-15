@@ -12,16 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HealthTrack">
 
-        <!-- 👇 Main screen (launch activity) -->
-        <activity
-            android:name=".ReportsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".RewardsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".NotificationActivity"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -31,19 +22,16 @@
             </intent-filter>
         </activity>
 
-        <!-- 👇 Dashboard -->
-        <activity
-            android:name=".DashboardActivity"
-            android:exported="false" />
+        <activity android:name=".DashboardActivity" android:exported="false" />
+        <activity android:name=".GoalsActivity" android:exported="false" />
+        <activity android:name=".HydrationActivity" android:exported="false" />
+        <activity android:name=".SleepActivity" android:exported="false" />
+        <activity android:name=".StepCounterActivity" android:exported="false" />
+        <activity android:name=".RelaxationActivity" android:exported="false" />
+        <activity android:name=".ReportsActivity" android:exported="false" />
+        <activity android:name=".RewardsActivity" android:exported="false" />
+        <activity android:name=".NotificationActivity" android:exported="false" />
 
-        <!-- 👇 Hydration tracker -->
-        <activity
-            android:name=".HydrationActivity"
-            android:exported="false" />
-        <activity
-             android:name=".SleepActivity" />
-        <activity 
-             android:name=".GoalsActivity" />
     </application>
 
 </manifest>

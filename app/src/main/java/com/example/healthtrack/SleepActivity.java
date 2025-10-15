@@ -1,4 +1,4 @@
-package com.example.healthtrack;  // <-- replace with your actual package name
+package com.example.healthtrack;
 
 import android.os.Bundle;
 import android.widget.Button;
@@ -15,15 +15,14 @@ public class SleepActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sleep); // links to activity_sleep.xml
+        setContentView(R.layout.activity_sleep);
 
-        // Initialize views
         edtBedtime = findViewById(R.id.edtBedtime);
         edtWakeup = findViewById(R.id.edtWakeup);
         spinnerSleepQuality = findViewById(R.id.spinnerSleepQuality);
         btnSaveSleep = findViewById(R.id.btnSaveSleep);
 
-        // Example: simple click action
+
         btnSaveSleep.setOnClickListener(v -> {
             String bedtime = edtBedtime.getText().toString();
             String wakeup = edtWakeup.getText().toString();
