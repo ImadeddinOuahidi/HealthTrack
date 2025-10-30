@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -16,8 +17,9 @@ import androidx.core.view.WindowInsetsCompat;
 public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText, passwordEditText;
-    private EditText ageEditText, weightEditText, heightEditText;
+    private EditText usernameRegEditText, passwordRegEditText, ageEditText, weightEditText, heightEditText;
     private Button loginButton, registerButton;
+    private LinearLayout loginForm, registerForm;
 
 
     @Override
@@ -34,13 +36,27 @@ public class MainActivity extends AppCompatActivity {
 
         usernameEditText = findViewById(R.id.edtUsername);
         passwordEditText = findViewById(R.id.edtPassword);
+        usernameRegEditText = findViewById(R.id.edtUsernameReg);
+        passwordRegEditText = findViewById(R.id.edtPasswordReg);
         ageEditText = findViewById(R.id.edtAge);
         weightEditText = findViewById(R.id.edtWeight);
         heightEditText = findViewById(R.id.edtHeight);
         loginButton = findViewById(R.id.btnLogin);
         registerButton = findViewById(R.id.btnRegister);
+        loginForm = findViewById(R.id.login_form);
+        registerForm = findViewById(R.id.register_form);
 
 
+    }
+
+    public void showLogin(View view) {
+        loginForm.setVisibility(View.VISIBLE);
+        registerForm.setVisibility(View.GONE);
+    }
+
+    public void showRegister(View view) {
+        loginForm.setVisibility(View.GONE);
+        registerForm.setVisibility(View.VISIBLE);
     }
 
     public void handleLogin(View v) {
@@ -55,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleRegistration(View v) {
-        String username = usernameEditText.getText().toString();
-        String password = passwordEditText.getText().toString();
+        String username = usernameRegEditText.getText().toString();
+        String password = passwordRegEditText.getText().toString();
         String ageStr = ageEditText.getText().toString();
         String weightStr = weightEditText.getText().toString();
         String heightStr = heightEditText.getText().toString();
