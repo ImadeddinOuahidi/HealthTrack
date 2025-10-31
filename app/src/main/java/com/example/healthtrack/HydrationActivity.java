@@ -30,12 +30,18 @@ public class HydrationActivity extends AppCompatActivity {
     private int currentHydration = 0;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    // Additional functionality from d_suma
+    private SharedPreferences sharedPreferences;
+    private int dailyTotal;
+    private final int hydrationGoal = 2000;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_hydration);
 
+        // Session check
         SharedPreferences sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
         String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
 
@@ -45,21 +51,27 @@ public class HydrationActivity extends AppCompatActivity {
         }
 
         userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("HydrationPrefs", MODE_PRIVATE);
 
+        // Window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.hydration), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Views
         dailyTotalTV = findViewById(R.id.dailyTotalTV);
         add250BTN = findViewById(R.id.add250BTN);
         add500BTN = findViewById(R.id.add500BTN);
         customBTN = findViewById(R.id.customBTN);
 
+        // Load existing hydration
         loadHydrationData();
+        dailyTotal = sharedPreferences.getInt("dailyTotal", 0);
         updateUI();
 
+        // Button listeners
         add250BTN.setOnClickListener(v -> addWater(250));
         add500BTN.setOnClickListener(v -> addWater(500));
         customBTN.setOnClickListener(v -> showCustomAddDialog());
@@ -78,13 +90,19 @@ public class HydrationActivity extends AppCompatActivity {
     }
 
     private void addWater(int amount) {
+        // Update both original and d_suma tracking
         currentHydration += amount;
-        updateUI();
         saveHydrationData();
+
+        dailyTotal += amount;
+        sharedPreferences.edit().putInt("dailyTotal", dailyTotal).apply();
+
+        updateUI();
+        Toast.makeText(this, amount + " ml added", Toast.LENGTH_SHORT).show();
     }
 
     private void updateUI() {
-        dailyTotalTV.setText("Total: " + currentHydration + " ml");
+        dailyTotalTV.setText("Total: " + dailyTotal + " ml / " + hydrationGoal + " ml");
     }
 
     private void showCustomAddDialog() {

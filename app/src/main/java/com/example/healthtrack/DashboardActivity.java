@@ -20,20 +20,35 @@ import java.util.Locale;
 
 public class DashboardActivity extends AppCompatActivity {
 
+    // Buttons
     private MaterialCardView hydrationButton, sleepButton, stepsButton, goalsButton;
     private MaterialCardView focusTimerButton, achievementsButton, reportsButton, notificationsButton;
+
+    // TextViews
     private TextView userNameTV, hydrationLabelTV, sleepLabelTV, stepsLabelTV;
+
+    // Progress Indicators
     private LinearProgressIndicator hydrationPB, sleepPB, stepsPB;
+
+    // Settings
     private ImageButton settingsIBTN;
+
+    // SharedPreferences
     private SharedPreferences sessionManager, userPreferences, goalsPreferences;
+    private SharedPreferences hydrationPrefs;
+
+    // Date format
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
+    // Hydration goal
+    private final int hydrationGoal = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
+        // Session
         sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
         String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
 
@@ -43,27 +58,29 @@ public class DashboardActivity extends AppCompatActivity {
             return;
         }
 
+        // User & goals prefs
         userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
         goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
+        hydrationPrefs = getSharedPreferences("HydrationPrefs", MODE_PRIVATE);
 
+        // User name
         userNameTV = findViewById(R.id.userNameTV);
         String username = userPreferences.getString("username", "User");
         userNameTV.setText(username);
 
+        // Settings button
         settingsIBTN = findViewById(R.id.settingsIBTN);
         settingsIBTN.setOnClickListener(v -> logout());
 
+        // Labels & ProgressBars
         hydrationLabelTV = findViewById(R.id.hydrationLabelTV);
         hydrationPB = findViewById(R.id.hydrationPB);
-
         sleepLabelTV = findViewById(R.id.sleepLabelTV);
         sleepPB = findViewById(R.id.sleepPB);
-
         stepsLabelTV = findViewById(R.id.stepsLabelTV);
         stepsPB = findViewById(R.id.stepsPB);
 
-        updateUI();
-
+        // Buttons
         hydrationButton = findViewById(R.id.hydrationBTN);
         sleepButton = findViewById(R.id.sleepBTN);
         stepsButton = findViewById(R.id.stepsBTN);
@@ -74,9 +91,11 @@ public class DashboardActivity extends AppCompatActivity {
         notificationsButton = findViewById(R.id.notificationsBTN);
 
         setupClickListeners();
+        updateUI();
     }
 
     private void setupClickListeners() {
+        // Full app navigation
         hydrationButton.setOnClickListener(v -> startActivity(new Intent(this, HydrationActivity.class)));
         sleepButton.setOnClickListener(v -> startActivity(new Intent(this, SleepActivity.class)));
         stepsButton.setOnClickListener(v -> startActivity(new Intent(this, StepCounterActivity.class)));
@@ -94,12 +113,21 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void updateHydrationUI() {
+        // Hydration from daily total prefs (branch 2 logic)
+        int dailyTotal = hydrationPrefs.getInt("dailyTotal", 0) + hydrationPrefs.getInt("hydrationBreak", 0) * 250;
+
+        // Hydration from user prefs (branch 1 logic)
         String today = sdf.format(Calendar.getInstance().getTime());
         int currentHydration = userPreferences.getInt("hydration_" + today, 0);
-        int dailyGoal = goalsPreferences.getInt("hydration_goal", 2000);
-        hydrationLabelTV.setText(String.format(Locale.getDefault(), "Hydration: %d / %d ml", currentHydration, dailyGoal));
-        hydrationPB.setMax(dailyGoal);
-        hydrationPB.setProgress(currentHydration);
+        int dailyGoalUser = goalsPreferences.getInt("hydration_goal", hydrationGoal);
+
+        // Merge both for display
+        int totalHydration = Math.max(dailyTotal, currentHydration);
+        int maxGoal = Math.max(dailyGoalUser, hydrationGoal);
+
+        hydrationLabelTV.setText(String.format(Locale.getDefault(), "Hydration: %d / %d ml", totalHydration, maxGoal));
+        hydrationPB.setMax(maxGoal);
+        hydrationPB.setProgress(totalHydration);
     }
 
     private void updateSleepUI() {
