@@ -1,9 +1,11 @@
 package com.example.healthtrack;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
-
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -14,6 +16,10 @@ public class DashboardActivity extends AppCompatActivity {
 
     private Button hydrationButton, sleepButton, stepsButton, goalsButton;
     private Button focusTimerButton, achievementsButton, reportsButton, notificationsButton;
+    private ProgressBar hydrationPB;
+    private TextView hydrationLabelTV;
+    private SharedPreferences sharedPreferences;
+    private final int hydrationGoal = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +33,6 @@ public class DashboardActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Initialize buttons
         hydrationButton = findViewById(R.id.hydrationBTN);
         sleepButton = findViewById(R.id.sleepBTN);
         stepsButton = findViewById(R.id.stepsBTN);
@@ -37,45 +42,34 @@ public class DashboardActivity extends AppCompatActivity {
         reportsButton = findViewById(R.id.reportsBTN);
         notificationsButton = findViewById(R.id.notificationsBTN);
 
-        setupNavigationButtons();
+        hydrationPB = findViewById(R.id.hydrationPB);
+        hydrationLabelTV = findViewById(R.id.hydrationLabelTV);
+
+        sharedPreferences = getSharedPreferences("HydrationPrefs", MODE_PRIVATE);
+
+        hydrationButton.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, HydrationActivity.class)));
+        focusTimerButton.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, RelaxationActivity.class)));
+
+        sleepButton.setOnClickListener(v -> {});
+        stepsButton.setOnClickListener(v -> {});
+        goalsButton.setOnClickListener(v -> startActivity(new Intent(DashboardActivity.this, GoalsActivity.class)));
+        achievementsButton.setOnClickListener(v -> {});
+        reportsButton.setOnClickListener(v -> {});
+        notificationsButton.setOnClickListener(v -> {});
+
+        updateHydrationProgress();
     }
 
-    private void setupNavigationButtons() {
-    hydrationButton.setOnClickListener(v -> {
-        Intent intent = new Intent(DashboardActivity.this, HydrationActivity.class);
-        startActivity(intent);
-    });
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateHydrationProgress();
+    }
 
-    sleepButton.setOnClickListener(v -> {
-        Intent intent = new Intent(DashboardActivity.this, SleepActivity.class);
-        startActivity(intent);
-    });
-
-    stepsButton.setOnClickListener(v -> {
-        // You can add StepActivity later
-    });
-
-    goalsButton.setOnClickListener(v -> {
-        Intent intent = new Intent(DashboardActivity.this, GoalsActivity.class);
-        startActivity(intent);
-    });
-
-    focusTimerButton.setOnClickListener(v -> {
-        // Future: Add FocusTimerActivity
-    });
-
-    achievementsButton.setOnClickListener(v -> {
-        // Future: Add AchievementsActivity
-    });
-
-    reportsButton.setOnClickListener(v -> {
-        // Future: Add ReportsActivity
-    });
-
-    notificationsButton.setOnClickListener(v -> {
-        // Future: Add NotificationsActivity
-    });
-
-
+    private void updateHydrationProgress() {
+        int dailyTotal = sharedPreferences.getInt("dailyTotal", 0) + sharedPreferences.getInt("hydrationBreak", 0) * 250;
+        int progress = Math.min(100, (dailyTotal * 100) / hydrationGoal);
+        hydrationPB.setProgress(progress);
+        hydrationLabelTV.setText("Hydration: " + dailyTotal + " / " + hydrationGoal + " ml");
     }
 }
