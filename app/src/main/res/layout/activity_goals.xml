@@ -11,7 +11,6 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -19,129 +18,98 @@
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="20dp" />
 
-        <!-- Hydration Goal -->
+        <!-- Hydration -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hydration Goal: 2000 ml"
-            android:textStyle="bold"
-            android:layout_marginBottom="6dp"/>
+            android:text="Hydration Goal (ml)"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/edtHydrationGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter total ml (e.g. 2000)"
+            android:inputType="number" />
         <ProgressBar
             android:id="@+id/progressHydrationGoal"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:progress="60"
-            android:max="100"
+            android:max="2000"
             android:progressTint="@android:color/holo_blue_light"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <!-- Sleep Goal -->
+        <!-- Sleep -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sleep Goal: 7 hrs"
-            android:textStyle="bold"
-            android:layout_marginBottom="6dp"/>
+            android:text="Sleep Goal (hrs)"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/edtSleepGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter hours (e.g. 8)"
+            android:inputType="numberDecimal" />
         <ProgressBar
             android:id="@+id/progressSleepGoal"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:progress="80"
-            android:max="100"
+            android:max="8"
             android:progressTint="@android:color/holo_purple"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <!-- Step Goal -->
+        <!-- Steps -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Step Goal: 10,000"
-            android:textStyle="bold"
-            android:layout_marginBottom="6dp"/>
+            android:text="Step Goal (steps)"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/edtStepGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter total steps (e.g. 10000)"
+            android:inputType="number" />
         <ProgressBar
             android:id="@+id/progressStepGoal"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="20dp"
-            android:progress="85"
-            android:max="100"
+            android:max="10000"
             android:progressTint="@android:color/holo_green_light"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <!-- Current Challenge Card -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@android:color/white"
-            android:elevation="4dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Current Challenge"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Drink at least 8 glasses of water every day for 7 days!"
-                android:textSize="16sp"/>
-
-            <ProgressBar
-                android:id="@+id/progressChallenge"
-                style="?android:attr/progressBarStyleHorizontal"
-                android:layout_width="match_parent"
-                android:layout_height="20dp"
-                android:progress="40"
-                android:max="100"
-                android:progressTint="@android:color/holo_orange_light"
-                android:layout_marginTop="12dp"/>
-        </LinearLayout>
-
-        <!-- Badges/Achievements -->
+        <!-- Challenge -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Unlocked Badges"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="10dp"/>
-
-        <LinearLayout
+            android:text="Challenge Goal (days)"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/edtChallengeGoal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:hint="Enter total days (e.g. 7)"
+            android:inputType="number" />
+        <ProgressBar
+            android:id="@+id/progressChallenge"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:max="7"
+            android:progressTint="@android:color/holo_orange_light"
+            android:layout_marginBottom="24dp" />
 
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:background="@android:color/holo_blue_light"
-                android:contentDescription="Badge 1"
-                android:layout_marginEnd="12dp"/>
-
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:background="@android:color/holo_green_light"
-                android:contentDescription="Badge 2"
-                android:layout_marginEnd="12dp"/>
-
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:background="@android:color/holo_orange_light"
-                android:contentDescription="Badge 3"/>
-        </LinearLayout>
+        <Button
+            android:id="@+id/btnSaveGoals"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Goals"
+            android:backgroundTint="#94d8d2"
+            android:textAllCaps="false" />
     </LinearLayout>
 </ScrollView>

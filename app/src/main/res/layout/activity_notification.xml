@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notification"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/notification"
     android:background="#F5F5F5"
     android:padding="20dp">
 
@@ -11,7 +11,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -22,7 +21,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp"/>
 
-        <!-- Hydration Reminder -->
+        <!-- Hydration -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,11 +43,10 @@
             <Switch
                 android:id="@+id/switchHydration"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <!-- Sleep Reminder -->
+        <!-- Sleep -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,11 +68,10 @@
             <Switch
                 android:id="@+id/switchSleep"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="true"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <!-- Step Reminder -->
+        <!-- Steps -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -99,7 +96,7 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
 
-        <!-- Challenge Updates -->
+        <!-- Challenges -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -123,5 +120,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+
+        <Button
+            android:id="@+id/clearAllBTN"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clear All"
+            android:backgroundTint="#f39c9c"
+            android:textAllCaps="false"
+            android:layout_marginTop="12dp"/>
     </LinearLayout>
 </ScrollView>

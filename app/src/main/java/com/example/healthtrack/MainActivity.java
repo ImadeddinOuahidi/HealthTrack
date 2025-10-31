@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private Button loginButton, registerButton;
     private LinearLayout loginForm, registerForm;
     private SharedPreferences sessionManager;
+
     public static final String SESSION_PREFS_NAME = "session_prefs";
     public static final String KEY_LOGGED_IN_USER = "logged_in_user";
 
@@ -30,9 +31,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
         sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
 
-        // to check user is logged in already or not
+        // if already logged in
         if (sessionManager.contains(KEY_LOGGED_IN_USER)) {
             navigateToDashboard();
             return;
@@ -76,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (password.length() < 6) {
+            Toast.makeText(this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Stubbed validation (simple, local check)
         SharedPreferences userPrefs = getSharedPreferences("user_prefs_" + username, MODE_PRIVATE);
         String registeredPassword = userPrefs.getString("password", null);
 
@@ -94,19 +102,37 @@ public class MainActivity extends AppCompatActivity {
         String weightStr = weightEditText.getText().toString();
         String heightStr = heightEditText.getText().toString();
 
-        if (username.isEmpty() || password.isEmpty() || ageStr.isEmpty() || weightStr.isEmpty() || heightStr.isEmpty()) {
+        // validation
+        if (username.isEmpty() || password.isEmpty() || ageStr.isEmpty() ||
+                weightStr.isEmpty() || heightStr.isEmpty()) {
             Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // to check if user already exist
+        if (password.length() < 6) {
+            Toast.makeText(this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int age = Integer.parseInt(ageStr);
+            if (age <= 0) {
+                Toast.makeText(this, "Please enter a valid positive age", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Age must be a number", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // check if user exists
         SharedPreferences userCheck = getSharedPreferences("user_prefs_" + username, MODE_PRIVATE);
         if (userCheck.contains("username")) {
             Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // save user data
+        // save new user data (stub)
         SharedPreferences newUserPrefs = getSharedPreferences("user_prefs_" + username, MODE_PRIVATE);
         SharedPreferences.Editor editor = newUserPrefs.edit();
         editor.putString("username", username);
