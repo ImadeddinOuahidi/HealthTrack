@@ -18,12 +18,17 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class HydrationActivity extends AppCompatActivity {
 
     private TextView dailyTotalTV;
     private Button add250BTN, add500BTN, customBTN;
     private SharedPreferences userPreferences;
     private int currentHydration = 0;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,6 @@ public class HydrationActivity extends AppCompatActivity {
         SharedPreferences sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
         String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
 
-        // check if the user is logged in
         if (loggedInUser == null) {
             finish();
             return;
@@ -62,12 +66,14 @@ public class HydrationActivity extends AppCompatActivity {
     }
 
     private void loadHydrationData() {
-        currentHydration = userPreferences.getInt("hydration", 0);
+        String today = sdf.format(Calendar.getInstance().getTime());
+        currentHydration = userPreferences.getInt("hydration_" + today, 0);
     }
 
     private void saveHydrationData() {
+        String today = sdf.format(Calendar.getInstance().getTime());
         SharedPreferences.Editor editor = userPreferences.edit();
-        editor.putInt("hydration", currentHydration);
+        editor.putInt("hydration_" + today, currentHydration);
         editor.apply();
     }
 
