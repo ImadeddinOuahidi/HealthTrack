@@ -14,14 +14,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class DashboardActivity extends AppCompatActivity {
 
     private MaterialCardView hydrationButton, sleepButton, stepsButton, goalsButton;
     private MaterialCardView focusTimerButton, achievementsButton, reportsButton, notificationsButton;
-    private TextView userNameTV, hydrationLabelTV;
-    private LinearProgressIndicator hydrationPB;
+    private TextView userNameTV, hydrationLabelTV, sleepLabelTV, stepsLabelTV;
+    private LinearProgressIndicator hydrationPB, sleepPB, stepsPB;
     private ImageButton settingsIBTN;
-    private SharedPreferences sessionManager, userPreferences;
+    private SharedPreferences sessionManager, userPreferences, goalsPreferences;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,7 @@ public class DashboardActivity extends AppCompatActivity {
         }
 
         userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
+        goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
 
         userNameTV = findViewById(R.id.userNameTV);
         String username = userPreferences.getString("username", "User");
@@ -48,7 +55,14 @@ public class DashboardActivity extends AppCompatActivity {
 
         hydrationLabelTV = findViewById(R.id.hydrationLabelTV);
         hydrationPB = findViewById(R.id.hydrationPB);
-        updateHydrationUI();
+
+        sleepLabelTV = findViewById(R.id.sleepLabelTV);
+        sleepPB = findViewById(R.id.sleepPB);
+
+        stepsLabelTV = findViewById(R.id.stepsLabelTV);
+        stepsPB = findViewById(R.id.stepsPB);
+
+        updateUI();
 
         hydrationButton = findViewById(R.id.hydrationBTN);
         sleepButton = findViewById(R.id.sleepBTN);
@@ -73,12 +87,37 @@ public class DashboardActivity extends AppCompatActivity {
         notificationsButton.setOnClickListener(v -> startActivity(new Intent(this, NotificationActivity.class)));
     }
 
+    private void updateUI() {
+        updateHydrationUI();
+        updateSleepUI();
+        updateStepsUI();
+    }
+
     private void updateHydrationUI() {
-        int currentHydration = userPreferences.getInt("hydration", 0);
-        int dailyGoal = 2000;
-        hydrationLabelTV.setText("Hydration: " + currentHydration + " / " + dailyGoal + " ml");
+        String today = sdf.format(Calendar.getInstance().getTime());
+        int currentHydration = userPreferences.getInt("hydration_" + today, 0);
+        int dailyGoal = goalsPreferences.getInt("hydration_goal", 2000);
+        hydrationLabelTV.setText(String.format(Locale.getDefault(), "Hydration: %d / %d ml", currentHydration, dailyGoal));
         hydrationPB.setMax(dailyGoal);
         hydrationPB.setProgress(currentHydration);
+    }
+
+    private void updateSleepUI() {
+        String today = sdf.format(Calendar.getInstance().getTime());
+        float currentSleep = userPreferences.getFloat("sleep_" + today, 0f);
+        float dailyGoal = goalsPreferences.getFloat("sleep_goal", 8f);
+        sleepLabelTV.setText(String.format(Locale.getDefault(), "Sleep: %.1f / %.1f hrs", currentSleep, dailyGoal));
+        sleepPB.setMax((int) (dailyGoal * 10));
+        sleepPB.setProgress((int) (currentSleep * 10));
+    }
+
+    private void updateStepsUI() {
+        String today = sdf.format(Calendar.getInstance().getTime());
+        int currentSteps = userPreferences.getInt("steps_" + today, 0);
+        int dailyGoal = goalsPreferences.getInt("steps_goal", 10000);
+        stepsLabelTV.setText(String.format(Locale.getDefault(), "Steps: %d / %d", currentSteps, dailyGoal));
+        stepsPB.setMax(dailyGoal);
+        stepsPB.setProgress(currentSteps);
     }
 
     private void logout() {
@@ -94,7 +133,8 @@ public class DashboardActivity extends AppCompatActivity {
         String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
         if (loggedInUser != null) {
             userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
-            updateHydrationUI();
+            goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
+            updateUI();
         }
     }
 }
