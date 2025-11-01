@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rewards"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/rewards"
     android:background="#F5F5F5"
     android:padding="20dp">
 
@@ -12,7 +13,6 @@
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
-        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -22,7 +22,6 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Subtitle -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +31,6 @@
             android:textColor="@android:color/darker_gray"
             android:layout_marginBottom="20dp"/>
 
-        <!-- Badge Grid -->
         <GridLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,8 +39,8 @@
             android:alignmentMode="alignMargins"
             android:useDefaultMargins="true">
 
-            <!-- Badge 1 -->
             <LinearLayout
+                android:id="@+id/badge1"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:orientation="vertical"
@@ -54,7 +52,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@android:drawable/ic_menu_compass"
-                    android:tint="@android:color/white"
+                    app:tint="@android:color/white"
                     android:contentDescription="Badge 1"/>
 
                 <TextView
@@ -65,8 +63,8 @@
                     android:textColor="@android:color/white"/>
             </LinearLayout>
 
-            <!-- Badge 2 -->
             <LinearLayout
+                android:id="@+id/badge2"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:orientation="vertical"
@@ -78,7 +76,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@android:drawable/ic_menu_today"
-                    android:tint="@android:color/white"
+                    app:tint="@android:color/white"
                     android:contentDescription="Badge 2"/>
 
                 <TextView
@@ -89,8 +87,8 @@
                     android:textColor="@android:color/white"/>
             </LinearLayout>
 
-            <!-- Badge 3 -->
             <LinearLayout
+                android:id="@+id/badge3"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:orientation="vertical"
@@ -102,7 +100,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@android:drawable/ic_menu_directions"
-                    android:tint="@android:color/white"
+                    app:tint="@android:color/white"
                     android:contentDescription="Badge 3"/>
 
                 <TextView
@@ -113,8 +111,8 @@
                     android:textColor="@android:color/white"/>
             </LinearLayout>
 
-            <!-- Badge 4 -->
             <LinearLayout
+                android:id="@+id/badge4"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:orientation="vertical"
@@ -126,7 +124,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@android:drawable/ic_menu_info_details"
-                    android:tint="@android:color/white"
+                    app:tint="@android:color/white"
                     android:contentDescription="Badge 4"/>
 
                 <TextView
@@ -137,8 +135,8 @@
                     android:textColor="@android:color/white"/>
             </LinearLayout>
 
-            <!-- Badge 5 -->
             <LinearLayout
+                android:id="@+id/badge5"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:orientation="vertical"
@@ -150,7 +148,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@android:drawable/ic_menu_agenda"
-                    android:tint="@android:color/white"
+                    app:tint="@android:color/white"
                     android:contentDescription="Badge 5"/>
 
                 <TextView
@@ -160,6 +158,7 @@
                     android:textSize="12sp"
                     android:textColor="@android:color/white"/>
             </LinearLayout>
+
         </GridLayout>
     </LinearLayout>
 </ScrollView>
