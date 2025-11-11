@@ -5,9 +5,15 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * RelaxationActivity handles focus and break timer cycles.
+ * Tracks hydration breaks and displays motivational tips.
+ *
+ * Author: Suma Bandaru
+ * Date: November 2025
+ */
 public class RelaxationActivity extends AppCompatActivity {
 
     private TextView txtTimer, tvTip;
@@ -15,12 +21,11 @@ public class RelaxationActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private boolean isRunning = false;
 
-    // Original timer value
     private long timeLeftInMillis = 25 * 60 * 1000;
 
-    // d_suma additions
     private final long focusDuration = 25 * 60 * 1000;
     private final long breakDuration = 5 * 60 * 1000;
+
     private boolean isFocus = true;
     private SharedPreferences sharedPreferences;
 
@@ -57,7 +62,6 @@ public class RelaxationActivity extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     if (isFocus) {
-                        // Focus session ended, start break
                         isFocus = false;
                         timeLeftInMillis = breakDuration;
                         tvTip.setText("Take a water break!");
@@ -66,7 +70,6 @@ public class RelaxationActivity extends AppCompatActivity {
                         sharedPreferences.edit().putInt("hydrationBreak", hydrationBreak).apply();
                         startTimer();
                     } else {
-                        // Break ended, start focus session
                         isFocus = true;
                         timeLeftInMillis = focusDuration;
                         tvTip.setText("Focus session started.");
