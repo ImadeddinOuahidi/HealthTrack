@@ -1,115 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
-    android:padding="20dp">
+    android:background="#F0F4F7"
+    android:fillViewport="true"
+    tools:context=".GoalsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:padding="16dp">
 
         <TextView
+            android:id="@+id/goalsTitleTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Goals - Challenges"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="20dp" />
-
-        <!-- Hydration -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Hydration Goal (ml)"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"
+            android:text="Set Your Goals"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
             android:textStyle="bold" />
-        <EditText
-            android:id="@+id/edtHydrationGoal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter total ml (e.g. 2000)"
-            android:inputType="number" />
-        <ProgressBar
-            android:id="@+id/progressHydrationGoal"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:max="2000"
-            android:progressTint="@android:color/holo_blue_light"
-            android:layout_marginBottom="16dp" />
 
-        <!-- Sleep -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Sleep Goal (hrs)"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/edtSleepGoal"
+        <!-- Hydration Goal -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter hours (e.g. 8)"
-            android:inputType="numberDecimal" />
-        <ProgressBar
-            android:id="@+id/progressSleepGoal"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:max="8"
-            android:progressTint="@android:color/holo_purple"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp">
 
-        <!-- Steps -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Step Goal (steps)"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/edtStepGoal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter total steps (e.g. 10000)"
-            android:inputType="number" />
-        <ProgressBar
-            android:id="@+id/progressStepGoal"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:max="10000"
-            android:progressTint="@android:color/holo_green_light"
-            android:layout_marginBottom="16dp" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
 
-        <!-- Challenge -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Challenge Goal (days)"
-            android:textStyle="bold" />
-        <EditText
-            android:id="@+id/edtChallengeGoal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter total days (e.g. 7)"
-            android:inputType="number" />
-        <ProgressBar
-            android:id="@+id/progressChallenge"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:max="7"
-            android:progressTint="@android:color/holo_orange_light"
-            android:layout_marginBottom="24dp" />
+                <ImageView
+                    android:id="@+id/hydrationIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/hydration"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+                <TextView
+                    android:id="@+id/hydrationGoalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Hydration Goal"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintBottom_toBottomOf="@id/hydrationIcon"
+                    app:layout_constraintStart_toEndOf="@id/hydrationIcon"
+                    app:layout_constraintTop_toTopOf="@id/hydrationIcon" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/hydrationGoalLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/hydrationIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/hydrationIcon"
+                    app:suffixText="ml">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/hydrationGoalValueET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="number"
+                        android:text="2000"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sliderHydrationGoal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:stepSize="100"
+                    android:value="2000"
+                    android:valueFrom="500"
+                    android:valueTo="5000"
+                    app:trackColorInactive="#e6f5f4"
+                    app:thumbColor="#94d8d2"
+                    app:trackColorActive="#94d8d2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/hydrationGoalLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Sleep Goal -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/sleepIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/sleep"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/sleepGoalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Sleep Goal"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintBottom_toBottomOf="@id/sleepIcon"
+                    app:layout_constraintStart_toEndOf="@id/sleepIcon"
+                    app:layout_constraintTop_toTopOf="@id/sleepIcon" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/sleepGoalLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/sleepIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/sleepIcon"
+                    app:suffixText="hrs">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/sleepGoalValueET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="numberDecimal"
+                        android:text="8.0"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sliderSleepGoal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:stepSize="0.5"
+                    android:value="8.0"
+                    android:valueFrom="4.0"
+                    android:valueTo="12.0"
+                    app:trackColorInactive="#e6f5f4"
+                    app:thumbColor="#94d8d2"
+                    app:trackColorActive="#94d8d2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/sleepGoalLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Steps Goal -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/stepsGoalCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <ImageView
+                    android:id="@+id/stepsIcon"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/footstep"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/stepsGoalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Steps Goal"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintBottom_toBottomOf="@id/stepsIcon"
+                    app:layout_constraintStart_toEndOf="@+id/stepsIcon"
+                    app:layout_constraintTop_toTopOf="@id/stepsIcon" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stepsGoalLayout"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
+                    android:layout_width="120dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/stepsIcon"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/stepsIcon"
+                    app:suffixText="steps">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/stepsGoalValueET"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/transparent"
+                        android:inputType="number"
+                        android:text="10000"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/sliderStepGoal"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:stepSize="500"
+                    android:value="10000"
+                    android:valueFrom="1000"
+                    android:valueTo="25000"
+                    app:trackColorInactive="#e6f5f4"
+                    app:thumbColor="#94d8d2"
+                    app:trackColorActive="#94d8d2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/stepsGoalLayout" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSaveGoals"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:paddingVertical="12dp"
             android:text="Save Goals"
-            android:backgroundTint="#94d8d2"
-            android:textAllCaps="false" />
+            app:backgroundTint="#94d8d2"
+            app:layout_constraintTop_toBottomOf="@id/stepsGoalCard" />
+
     </LinearLayout>
 </ScrollView>

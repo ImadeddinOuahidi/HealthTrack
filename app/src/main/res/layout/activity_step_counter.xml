@@ -1,80 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:background="#F5F5F5"
-    android:padding="20dp">
+    android:background="#F0F4F7"
+    android:fillViewport="true"
+    tools:context=".StepCounterActivity">
 
-    <!-- Title -->
-    <TextView
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Step Counter"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginBottom="30dp"/>
-
-    <!-- Big Step Count -->
-    <TextView
-        android:id="@+id/txtSteps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="8,542 Steps"
-        android:textSize="40sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_green_dark"
-        android:layout_marginBottom="20dp"/>
-
-    <!-- Step Progress -->
-    <ProgressBar
-        android:id="@+id/progressSteps"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="250dp"
-        android:layout_height="20dp"
-        android:progress="85"
-        android:max="100"
-        android:progressTint="@android:color/holo_green_light"
-        android:layout_marginBottom="20dp"/>
-
-    <!-- Distance & Calories -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="30dp">
+        android:padding="16dp">
 
         <TextView
+            android:id="@+id/stepCounterTitleTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Distance: 6.2 km"
-            android:textSize="16sp"
+            android:layout_marginTop="16dp"
+            android:text="Step Counter"
+            android:textAppearance="?attr/textAppearanceHeadlineSmall"
             android:textStyle="bold"
-            android:layout_marginEnd="30dp"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/stepsCircularProgress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Calories: 320 kcal"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
-    </LinearLayout>
+            android:layout_marginTop="24dp"
+            android:progress="85"
+            app:indicatorSize="220dp"
+            app:indicatorColor="#2196F3"
+            app:trackColor="#CFD8DC"
+            app:trackThickness="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stepCounterTitleTV" />
 
-    <!-- Weekly Graph Placeholder -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Weekly Step Graph"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="10dp"/>
+        <TextView
+            android:id="@+id/txtSteps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8,542"
+            android:textAppearance="?attr/textAppearanceDisplaySmall"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/stepsLabel"
+            app:layout_constraintEnd_toEndOf="@+id/stepsCircularProgress"
+            app:layout_constraintStart_toStartOf="@+id/stepsCircularProgress"
+            app:layout_constraintTop_toTopOf="@+id/stepsCircularProgress"
+            app:layout_constraintVertical_chainStyle="packed" />
 
-    <ImageView
-        android:layout_width="320dp"
-        android:layout_height="200dp"
-        android:background="@android:color/darker_gray"
-        android:contentDescription="Steps Graph Placeholder"/>
-</LinearLayout>
+        <TextView
+            android:id="@+id/stepsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Steps"
+            android:textAppearance="?attr/textAppearanceBodyLarge"
+            app:layout_constraintBottom_toTopOf="@+id/goalTV"
+            app:layout_constraintEnd_toEndOf="@+id/stepsCircularProgress"
+            app:layout_constraintStart_toStartOf="@+id/stepsCircularProgress"
+            app:layout_constraintTop_toBottomOf="@+id/txtSteps" />
+
+        <TextView
+            android:id="@+id/goalTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="of 10,000 steps"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            app:layout_constraintBottom_toBottomOf="@+id/stepsCircularProgress"
+            app:layout_constraintEnd_toEndOf="@+id/stepsCircularProgress"
+            app:layout_constraintStart_toStartOf="@+id/stepsCircularProgress"
+            app:layout_constraintTop_toBottomOf="@+id/stepsLabel" />
+
+
+        <LinearLayout
+            android:id="@+id/statsLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stepsCircularProgress">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginBottom="8dp"
+                        android:src="@drawable/distance" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Distance"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <TextView
+                        android:id="@+id/distanceTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="6.2 km"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                app:cardCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginBottom="8dp"
+                        android:src="@drawable/calories" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Calories"
+                        android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                    <TextView
+                        android:id="@+id/caloriesTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="320 kcal"
+                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/graphCard"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/statsLayout">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="Weekly Steps"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <com.jjoe64.graphview.GraphView
+                    android:id="@+id/stepsGraph"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

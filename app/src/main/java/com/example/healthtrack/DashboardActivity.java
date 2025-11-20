@@ -25,13 +25,13 @@ public class DashboardActivity extends AppCompatActivity {
     private MaterialCardView focusTimerButton, achievementsButton, reportsButton, notificationsButton;
 
     // TextViews
-    private TextView userNameTV, hydrationLabelTV, sleepLabelTV, stepsLabelTV;
+    private TextView userNameTV, hydrationLabelTV, sleepLabelTV, stepsLabelTV, profileInitialTV;
 
     // Progress Indicators
     private LinearProgressIndicator hydrationPB, sleepPB, stepsPB;
 
     // Settings
-    private ImageButton settingsIBTN;
+    private ImageButton logoutIBTN;
 
     // SharedPreferences
     private SharedPreferences sessionManager, userPreferences, goalsPreferences;
@@ -63,14 +63,18 @@ public class DashboardActivity extends AppCompatActivity {
         goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
         hydrationPrefs = getSharedPreferences("HydrationPrefs", MODE_PRIVATE);
 
-        // User name
+        // User name and initial
         userNameTV = findViewById(R.id.userNameTV);
+        profileInitialTV = findViewById(R.id.profileInitialTV);
         String username = userPreferences.getString("username", "User");
         userNameTV.setText(username);
+        if (!username.isEmpty()) {
+            profileInitialTV.setText(String.valueOf(username.charAt(0)).toUpperCase());
+        }
 
         // Settings button
-        settingsIBTN = findViewById(R.id.settingsIBTN);
-        settingsIBTN.setOnClickListener(v -> logout());
+        logoutIBTN = findViewById(R.id.logoutIBTN);
+        logoutIBTN.setOnClickListener(v -> logout());
 
         // Labels & ProgressBars
         hydrationLabelTV = findViewById(R.id.hydrationLabelTV);

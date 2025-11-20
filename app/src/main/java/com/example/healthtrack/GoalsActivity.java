@@ -5,115 +5,146 @@ import static com.example.healthtrack.MainActivity.SESSION_PREFS_NAME;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.slider.Slider;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Locale;
+
 public class GoalsActivity extends AppCompatActivity {
 
-    private ProgressBar progressHydrationGoal, progressSleepGoal, progressStepGoal, progressChallenge;
-    private EditText edtHydrationGoal, edtSleepGoal, edtStepGoal, edtChallengeGoal;
+    private Slider sliderHydrationGoal, sliderSleepGoal, sliderStepGoal;
+    private TextInputEditText hydrationGoalValueET, sleepGoalValueET, stepsGoalValueET;
     private Button btnSaveGoals;
-    private SharedPreferences goalsPrefs;
-    private SharedPreferences sessionPrefs;
-    private String loggedInUser;
+
+    private SharedPreferences goalsPreferences;
+    private boolean isUpdatingFromSlider = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goals);
 
-        sessionPrefs = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
-        loggedInUser = sessionPrefs.getString(KEY_LOGGED_IN_USER, null);
+        SharedPreferences sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
+        String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
 
         if (loggedInUser == null) {
-            Toast.makeText(this, "No active user session found!", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
-        // Each user gets their own goal file
-        goalsPrefs = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
+        goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
 
-        progressHydrationGoal = findViewById(R.id.progressHydrationGoal);
-        progressSleepGoal = findViewById(R.id.progressSleepGoal);
-        progressStepGoal = findViewById(R.id.progressStepGoal);
-        progressChallenge = findViewById(R.id.progressChallenge);
+        // Sliders
+        sliderHydrationGoal = findViewById(R.id.sliderHydrationGoal);
+        sliderSleepGoal = findViewById(R.id.sliderSleepGoal);
+        sliderStepGoal = findViewById(R.id.sliderStepGoal);
 
-        edtHydrationGoal = findViewById(R.id.edtHydrationGoal);
-        edtSleepGoal = findViewById(R.id.edtSleepGoal);
-        edtStepGoal = findViewById(R.id.edtStepGoal);
-        edtChallengeGoal = findViewById(R.id.edtChallengeGoal);
+        // EditTexts for slider values
+        hydrationGoalValueET = findViewById(R.id.hydrationGoalValueET);
+        sleepGoalValueET = findViewById(R.id.sleepGoalValueET);
+        stepsGoalValueET = findViewById(R.id.stepsGoalValueET);
+
         btnSaveGoals = findViewById(R.id.btnSaveGoals);
 
         loadGoals();
+        setupListeners();
+    }
+
+    private void setupListeners() {
+        // Hydration Listeners
+        sliderHydrationGoal.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                isUpdatingFromSlider = true;
+                hydrationGoalValueET.setText(String.format(Locale.getDefault(), "%.0f", value));
+                isUpdatingFromSlider = false;
+            }
+        });
+        hydrationGoalValueET.addTextChangedListener(new GoalTextWatcher(sliderHydrationGoal, hydrationGoalValueET));
+
+        // Sleep Listeners
+        sliderSleepGoal.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                isUpdatingFromSlider = true;
+                sleepGoalValueET.setText(String.format(Locale.getDefault(), "%.1f", value));
+                isUpdatingFromSlider = false;
+            }
+        });
+        sleepGoalValueET.addTextChangedListener(new GoalTextWatcher(sliderSleepGoal, sleepGoalValueET));
+
+        // Steps Listeners
+        sliderStepGoal.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) {
+                isUpdatingFromSlider = true;
+                stepsGoalValueET.setText(String.format(Locale.getDefault(), "%.0f", value));
+                isUpdatingFromSlider = false;
+            }
+        });
+        stepsGoalValueET.addTextChangedListener(new GoalTextWatcher(sliderStepGoal, stepsGoalValueET));
 
         btnSaveGoals.setOnClickListener(v -> saveGoals());
     }
 
-    private void saveGoals() {
-        if (edtHydrationGoal.getText().toString().isEmpty() ||
-                edtSleepGoal.getText().toString().isEmpty() ||
-                edtStepGoal.getText().toString().isEmpty() ||
-                edtChallengeGoal.getText().toString().isEmpty()) {
-            Toast.makeText(this, "Please fill all goal fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        try {
-            int hydration = Integer.parseInt(edtHydrationGoal.getText().toString());
-            float sleep = Float.parseFloat(edtSleepGoal.getText().toString());
-            int steps = Integer.parseInt(edtStepGoal.getText().toString());
-            int challenge = Integer.parseInt(edtChallengeGoal.getText().toString());
-
-            if (hydration <= 0 || sleep <= 0 || steps <= 0 || challenge <= 0) {
-                Toast.makeText(this, "Values must be greater than zero", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            SharedPreferences.Editor editor = goalsPrefs.edit();
-            editor.putInt("hydration_goal", hydration);
-            editor.putFloat("sleep_goal", sleep);
-            editor.putInt("steps_goal", steps);
-            editor.putInt("challenge_goal", challenge);
-            editor.apply();
-
-            updateProgressBars(hydration, sleep, steps, challenge);
-
-            Toast.makeText(this, "Goals saved successfully for " + loggedInUser, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "Error saving goals: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
-
     private void loadGoals() {
-        int hydration = goalsPrefs.getInt("hydration_goal", 2000);
-        float sleep = goalsPrefs.getFloat("sleep_goal", 8f);
-        int steps = goalsPrefs.getInt("steps_goal", 10000);
-        int challenge = goalsPrefs.getInt("challenge_goal", 7);
+        int hydrationGoal = goalsPreferences.getInt("hydration_goal", 2000);
+        float sleepGoal = goalsPreferences.getFloat("sleep_goal", 8.0f);
+        int stepGoal = goalsPreferences.getInt("steps_goal", 10000);
 
-        edtHydrationGoal.setText(String.valueOf(hydration));
-        edtSleepGoal.setText(String.valueOf(sleep));
-        edtStepGoal.setText(String.valueOf(steps));
-        edtChallengeGoal.setText(String.valueOf(challenge));
+        sliderHydrationGoal.setValue(hydrationGoal);
+        sliderSleepGoal.setValue(sleepGoal);
+        sliderStepGoal.setValue(stepGoal);
 
-        updateProgressBars(hydration, sleep, steps, challenge);
+        hydrationGoalValueET.setText(String.valueOf(hydrationGoal));
+        sleepGoalValueET.setText(String.valueOf(sleepGoal));
+        stepsGoalValueET.setText(String.valueOf(stepGoal));
     }
 
-    private void updateProgressBars(int hydration, float sleep, int steps, int challenge) {
-        progressHydrationGoal.setMax(Math.max(hydration, 1));
-        progressHydrationGoal.setProgress(1200);
+    private void saveGoals() {
+        try {
+            SharedPreferences.Editor editor = goalsPreferences.edit();
+            editor.putInt("hydration_goal", Integer.parseInt(hydrationGoalValueET.getText().toString()));
+            editor.putFloat("sleep_goal", Float.parseFloat(sleepGoalValueET.getText().toString()));
+            editor.putInt("steps_goal", Integer.parseInt(stepsGoalValueET.getText().toString()));
+            editor.apply();
+            Toast.makeText(this, "Goals saved successfully!", Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Please enter valid numbers for all goals.", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        progressSleepGoal.setMax((int) Math.max(sleep, 1));
-        progressSleepGoal.setProgress(7);
+    private class GoalTextWatcher implements TextWatcher {
+        private final Slider slider;
+        private final TextInputEditText editText;
 
-        progressStepGoal.setMax(Math.max(steps, 1));
-        progressStepGoal.setProgress(8500);
+        GoalTextWatcher(Slider slider, TextInputEditText editText) {
+            this.slider = slider;
+            this.editText = editText;
+        }
 
-        progressChallenge.setMax(Math.max(challenge, 1));
-        progressChallenge.setProgress(3);
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (!isUpdatingFromSlider) {
+                try {
+                    float value = Float.parseFloat(s.toString());
+                    if (value >= slider.getValueFrom() && value <= slider.getValueTo()) {
+                        slider.setValue(value);
+                    }
+                } catch (NumberFormatException e) {
+                    // Ignore, let the user continue typing
+                }
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) { }
     }
 }

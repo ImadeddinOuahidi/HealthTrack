@@ -9,27 +9,42 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.StaticLabelsFormatter;
+import com.jjoe64.graphview.series.BarGraphSeries;
+import com.jjoe64.graphview.series.DataPoint;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 public class SleepActivity extends AppCompatActivity {
 
-    private TextInputEditText edtBedtime, edtWakeup;
+    private Chip chipBedtime, chipWakeup;
     private AutoCompleteTextView spinnerSleepQuality;
     private Button btnSaveSleep;
+    private GraphView sleepGraph;
+    private TextView durationTV;
+    private CircularProgressIndicator sleepCircularProgress;
 
     private SharedPreferences userPreferences;
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+    private final String SLEEP_LOG_PREFIX = "sleep_log_";
+    private Date bedtime, wakeupTime;
+    private final float sleepGoal = 8.0f; // 8 hours goal
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,24 +61,27 @@ public class SleepActivity extends AppCompatActivity {
 
         userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
 
-        edtBedtime = findViewById(R.id.edtBedtime);
-        edtWakeup = findViewById(R.id.edtWakeup);
+        chipBedtime = findViewById(R.id.chipBedtime);
+        chipWakeup = findViewById(R.id.chipWakeup);
         spinnerSleepQuality = findViewById(R.id.spinnerSleepQuality);
         btnSaveSleep = findViewById(R.id.btnSaveSleep);
+        sleepGraph = findViewById(R.id.sleepGraph);
+        durationTV = findViewById(R.id.durationTV);
+        sleepCircularProgress = findViewById(R.id.sleepCircularProgress);
 
         setupSpinners();
-
         setupTimePickers();
-
         btnSaveSleep.setOnClickListener(v -> saveSleepLog());
+
+        loadWeeklySleepData();
     }
 
     private void setupTimePickers() {
-        edtBedtime.setOnClickListener(v -> showTimePicker(edtBedtime));
-        edtWakeup.setOnClickListener(v -> showTimePicker(edtWakeup));
+        chipBedtime.setOnClickListener(v -> showTimePicker(chipBedtime, true));
+        chipWakeup.setOnClickListener(v -> showTimePicker(chipWakeup, false));
     }
 
-    private void showTimePicker(final TextInputEditText editText) {
+    private void showTimePicker(final Chip chip, final boolean isBedtime) {
         Calendar cal = Calendar.getInstance();
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);
@@ -72,9 +90,32 @@ public class SleepActivity extends AppCompatActivity {
                 (view, hourOfDay, minuteOfHour) -> {
                     cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     cal.set(Calendar.MINUTE, minuteOfHour);
-                    editText.setText(timeFormat.format(cal.getTime()));
+                    if (isBedtime) {
+                        bedtime = cal.getTime();
+                    } else {
+                        wakeupTime = cal.getTime();
+                    }
+                    chip.setText(timeFormat.format(cal.getTime()));
+                    calculateAndShowDuration();
                 }, hour, minute, false);
         timePickerDialog.show();
+    }
+
+    private void calculateAndShowDuration() {
+        if (bedtime != null && wakeupTime != null) {
+            long durationMillis = wakeupTime.getTime() - bedtime.getTime();
+            if (durationMillis < 0) {
+                durationMillis += TimeUnit.DAYS.toMillis(1);
+            }
+
+            long hours = TimeUnit.MILLISECONDS.toHours(durationMillis);
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(durationMillis) % 60;
+            durationTV.setText(String.format(Locale.getDefault(), "%dh %dm", hours, minutes));
+
+            float durationHours = (float) durationMillis / (1000 * 60 * 60);
+            int progress = (int) ((durationHours * 100.0f) / sleepGoal);
+            sleepCircularProgress.setProgress(progress, true);
+        }
     }
 
     private void setupSpinners() {
@@ -84,37 +125,59 @@ public class SleepActivity extends AppCompatActivity {
     }
 
     private void saveSleepLog() {
-        String bedtimeStr = edtBedtime.getText().toString();
-        String wakeupStr = edtWakeup.getText().toString();
-        String quality = spinnerSleepQuality.getText().toString();
-
-        if (bedtimeStr.isEmpty() || wakeupStr.isEmpty() || quality.isEmpty()) {
+        if (bedtime == null || wakeupTime == null || spinnerSleepQuality.getText().toString().isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        try {
-            long bedtimeMillis = timeFormat.parse(bedtimeStr).getTime();
-            long wakeupMillis = timeFormat.parse(wakeupStr).getTime();
-
-            long durationMillis = wakeupMillis - bedtimeMillis;
-            if (durationMillis < 0) {
-                durationMillis += TimeUnit.DAYS.toMillis(1);
-            }
-
-            float hours = (float) durationMillis / TimeUnit.HOURS.toMillis(1);
-
-            String today = sdf.format(Calendar.getInstance().getTime());
-            SharedPreferences.Editor editor = userPreferences.edit();
-            editor.putFloat("sleep_" + today, hours);
-            editor.apply();
-
-            Toast.makeText(this, "Sleep logged successfully!", Toast.LENGTH_SHORT).show();
-
-        } catch (Exception e) {
-            Toast.makeText(this, "Invalid time format", Toast.LENGTH_SHORT).show();
+        long durationMillis = wakeupTime.getTime() - bedtime.getTime();
+        if (durationMillis < 0) {
+            durationMillis += TimeUnit.DAYS.toMillis(1);
         }
+        float hours = (float) durationMillis / (1000 * 60 * 60);
+        String quality = spinnerSleepQuality.getText().toString();
+
+        String today = sdf.format(Calendar.getInstance().getTime());
+        String logEntry = hours + "," + quality;
+
+        SharedPreferences.Editor editor = userPreferences.edit();
+        editor.putString(SLEEP_LOG_PREFIX + today, logEntry);
+        editor.putFloat("sleep_" + today, hours); // For dashboard compatibility
+        editor.apply();
+
+        Toast.makeText(this, "Sleep logged successfully!", Toast.LENGTH_SHORT).show();
+        loadWeeklySleepData(); // Refresh graph
     }
 
+    private void loadWeeklySleepData() {
+        List<DataPoint> dataPoints = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
+        Calendar cal = Calendar.getInstance();
 
+        for (int i = 6; i >= 0; i--) {
+            cal.setTime(new Date());
+            cal.add(Calendar.DAY_OF_YEAR, -i);
+            String dateKey = sdf.format(cal.getTime());
+            String logEntry = userPreferences.getString(SLEEP_LOG_PREFIX + dateKey, "0,N/A");
+
+            float hours = Float.parseFloat(logEntry.split(",")[0]);
+            dataPoints.add(new DataPoint(6 - i, hours));
+
+            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+            labels.add(dayFormat.format(cal.getTime()));
+        }
+
+        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints.toArray(new DataPoint[0]));
+        series.setSpacing(50);
+
+        sleepGraph.removeAllSeries();
+        sleepGraph.addSeries(series);
+
+        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(sleepGraph);
+        staticLabelsFormatter.setHorizontalLabels(labels.toArray(new String[0]));
+        sleepGraph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
+        sleepGraph.getViewport().setYAxisBoundsManual(true);
+        sleepGraph.getViewport().setMinY(0);
+        sleepGraph.getViewport().setMaxY(12);
+    }
 }

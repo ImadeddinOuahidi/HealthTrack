@@ -26,18 +26,30 @@
                 android:id="@+id/headerLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#94d8d2"
+                android:background="#e6f5f4"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="16dp">
 
-                <ImageView
-                    android:id="@+id/profileIV"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/profileCard"
                     android:layout_width="60dp"
                     android:layout_height="60dp"
                     android:layout_marginEnd="16dp"
-                    android:contentDescription="@string/app_name"
-                    android:src="@mipmap/ic_launcher_round" />
+                    app:cardBackgroundColor="#94d8d2"
+                    app:cardCornerRadius="30dp"
+                    app:cardElevation="0dp">
+
+                    <TextView
+                        android:id="@+id/profileInitialTV"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="I"
+                        android:textAppearance="?attr/textAppearanceHeadlineMedium"
+                        android:textColor="?attr/colorOnPrimary" />
+
+                </com.google.android.material.card.MaterialCardView>
 
                 <LinearLayout
                     android:id="@+id/userInfoLayout"
@@ -64,11 +76,14 @@
                 </LinearLayout>
 
                 <ImageButton
-                    android:id="@+id/settingsIBTN"
+                    android:id="@+id/logoutIBTN"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:padding="8dp"
-                    android:src="@android:drawable/btn_dialog" />
+                    android:scaleType="fitCenter"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="Logout"
+                    android:src="@drawable/logout" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -93,7 +108,7 @@
                 android:id="@+id/overviewLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#94d8d2"
+                android:background="#e6f5f4"
                 android:orientation="vertical"
                 android:padding="16dp">
 
@@ -185,6 +200,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -216,6 +232,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -247,6 +264,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -278,6 +296,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -309,6 +328,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -340,6 +360,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -371,6 +392,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -402,6 +424,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
+                    android:background="#e6f5f4"
                     android:padding="16dp">
 
                     <ImageView
@@ -422,5 +445,3 @@
 
     </LinearLayout>
 </ScrollView>
-
-
