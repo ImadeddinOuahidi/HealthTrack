@@ -1,76 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurfaceContainerLowest"
-    android:fillViewport="true">
+    android:background="#F0F4F7"
+    android:fillViewport="true"
+    tools:context=".SleepActivity">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
             android:id="@+id/sleepTitleTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="24dp"
+            android:layout_marginTop="16dp"
             android:text="Sleep Tracker"
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/sleepCircularProgress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:progress="0"
+            app:indicatorSize="220dp"
+            app:indicatorColor="#2196F3"
+            app:trackColor="#CFD8DC"
+            app:trackThickness="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sleepTitleTV" />
+
+        <TextView
+            android:id="@+id/durationTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0h 0m"
+            android:textAppearance="?attr/textAppearanceDisplaySmall"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/sleepCircularProgress"
+            app:layout_constraintEnd_toEndOf="@+id/sleepCircularProgress"
+            app:layout_constraintStart_toStartOf="@+id/sleepCircularProgress"
+            app:layout_constraintTop_toTopOf="@+id/sleepCircularProgress" />
 
         <com.google.android.material.card.MaterialCardView
-            style="?attr/materialCardViewFilledStyle"
-            android:layout_width="match_parent"
+            android:id="@+id/logCard"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardElevation="0dp">
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sleepCircularProgress">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
+                android:padding="16dp">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/bedtimeLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBedtime"
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:hint="Bedtime">
+                    android:layout_marginEnd="8dp"
+                    android:text="Select Bedtime"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:chipMinHeight="52dp"
+                    app:layout_constraintEnd_toStartOf="@+id/chipWakeup"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edtBedtime"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/wakeupLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWakeup"
+                    style="@style/Widget.Material3.Chip.Suggestion"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:hint="Wake-up Time">
+                    android:layout_marginStart="8dp"
+                    android:text="Select Wake-up"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:chipMinHeight="52dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/chipBedtime"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edtWakeup"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:focusable="false" />
-                </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/qualityLayout"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
-                    android:hint="Sleep Quality">
+                    android:layout_marginTop="16dp"
+                    android:hint="Sleep Quality"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/chipBedtime">
 
                     <AutoCompleteTextView
                         android:id="@+id/spinnerSleepQuality"
@@ -81,19 +114,28 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSaveSleep"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:paddingVertical="12dp"
-                    android:text="Save Sleep Log" />
+                    android:text="Save Sleep Log"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/qualityLayout" />
 
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
+
         <com.google.android.material.card.MaterialCardView
-            style="?attr/materialCardViewFilledStyle"
-            android:layout_width="match_parent"
+            android:id="@+id/graphCard"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:cardElevation="0dp">
+            android:layout_marginTop="24dp"
+            app:cardCornerRadius="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logCard">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -108,15 +150,13 @@
                     android:text="Weekly Sleep Pattern"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-                <ImageView
-                    android:layout_width="320dp"
-                    android:layout_height="200dp"
-                    android:background="@android:color/darker_gray"
-                    android:contentDescription="Sleep Graph Placeholder"
-                    android:layout_marginBottom="20dp"/>
+                <com.jjoe64.graphview.GraphView
+                    android:id="@+id/sleepGraph"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
