@@ -1,28 +1,31 @@
 package com.example.healthtrack;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
+
+import java.util.Locale;
 
 public class RelaxationActivity extends AppCompatActivity {
 
-    private TextView txtTimer, tvTip;
-    private Button btnStart, btnStop, btnReset;
+    private long initialTimeInMillis = 25 * 60 * 1000;
+
+    private TextView txtTimer;
+    private FloatingActionButton fabPlayPause;
+    private Button btnReset;
+    private CircularProgressIndicator timerProgress;
+    private ChipGroup durationChips;
+
     private CountDownTimer countDownTimer;
-    private boolean isRunning = false;
-
-    // Original timer value
-    private long timeLeftInMillis = 25 * 60 * 1000;
-
-    // d_suma additions
-    private final long focusDuration = 25 * 60 * 1000;
-    private final long breakDuration = 5 * 60 * 1000;
-    private boolean isFocus = true;
-    private SharedPreferences sharedPreferences;
+    private boolean isTimerRunning;
+    private long timeLeftInMillis;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,70 +33,92 @@ public class RelaxationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_relaxation);
 
         txtTimer = findViewById(R.id.txtTimer);
-        tvTip = findViewById(R.id.tvTip);
-        btnStart = findViewById(R.id.btnStart);
-        btnStop = findViewById(R.id.btnStop);
+        fabPlayPause = findViewById(R.id.fabPlayPause);
         btnReset = findViewById(R.id.btnReset);
+        timerProgress = findViewById(R.id.timerProgress);
+        durationChips = findViewById(R.id.durationChips);
 
-        sharedPreferences = getSharedPreferences("HydrationPrefs", MODE_PRIVATE);
+        timeLeftInMillis = initialTimeInMillis;
 
+        setupListeners();
         updateTimerText();
-        tvTip.setText("Tip: Take deep breaths during breaks.");
+    }
 
-        btnStart.setOnClickListener(v -> startTimer());
-        btnStop.setOnClickListener(v -> stopTimer());
+    private void setupListeners() {
+        fabPlayPause.setOnClickListener(v -> {
+            if (isTimerRunning) {
+                pauseTimer();
+            } else {
+                startTimer();
+            }
+        });
+
         btnReset.setOnClickListener(v -> resetTimer());
+
+        durationChips.setOnCheckedChangeListener((group, checkedId) -> {
+            if (isTimerRunning) {
+                // Prevent changing duration while timer is running
+                return;
+            }
+            handleDurationChange(checkedId);
+        });
+    }
+
+    private void handleDurationChange(int checkedId) {
+        if (checkedId == R.id.chip15min) {
+            initialTimeInMillis = 15 * 60 * 1000;
+        } else if (checkedId == R.id.chip25min) {
+            initialTimeInMillis = 25 * 60 * 1000;
+        } else if (checkedId == R.id.chip45min) {
+            initialTimeInMillis = 45 * 60 * 1000;
+        }
+        resetTimer();
     }
 
     private void startTimer() {
-        if (!isRunning) {
-            countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timeLeftInMillis = millisUntilFinished;
-                    updateTimerText();
-                }
+        countDownTimer = new CountDownTimer(timeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
+                updateTimerText();
+                updateProgressBar();
+            }
 
-                @Override
-                public void onFinish() {
-                    if (isFocus) {
-                        // Focus session ended, start break
-                        isFocus = false;
-                        timeLeftInMillis = breakDuration;
-                        tvTip.setText("Take a water break!");
-                        int hydrationBreak = sharedPreferences.getInt("hydrationBreak", 0);
-                        hydrationBreak++;
-                        sharedPreferences.edit().putInt("hydrationBreak", hydrationBreak).apply();
-                        startTimer();
-                    } else {
-                        // Break ended, start focus session
-                        isFocus = true;
-                        timeLeftInMillis = focusDuration;
-                        tvTip.setText("Focus session started.");
-                        startTimer();
-                    }
-                }
-            }.start();
-            isRunning = true;
-        }
+            @Override
+            public void onFinish() {
+                isTimerRunning = false;
+                fabPlayPause.setImageResource(R.drawable.ic_play);
+            }
+        }.start();
+
+        isTimerRunning = true;
+        fabPlayPause.setImageResource(R.drawable.ic_pause);
     }
 
-    private void stopTimer() {
-        if (countDownTimer != null) countDownTimer.cancel();
-        isRunning = false;
+    private void pauseTimer() {
+        countDownTimer.cancel();
+        isTimerRunning = false;
+        fabPlayPause.setImageResource(R.drawable.ic_play);
     }
 
     private void resetTimer() {
-        stopTimer();
-        timeLeftInMillis = focusDuration;
-        isFocus = true;
+        if (isTimerRunning) {
+            pauseTimer();
+        }
+        timeLeftInMillis = initialTimeInMillis;
         updateTimerText();
-        tvTip.setText("Tip: Take deep breaths during breaks.");
+        updateProgressBar();
     }
 
     private void updateTimerText() {
         int minutes = (int) (timeLeftInMillis / 1000) / 60;
         int seconds = (int) (timeLeftInMillis / 1000) % 60;
-        txtTimer.setText(String.format("%02d:%02d", minutes, seconds));
+        String timeFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        txtTimer.setText(timeFormatted);
+    }
+
+    private void updateProgressBar() {
+        int progress = (int) (100 * timeLeftInMillis / initialTimeInMillis);
+        timerProgress.setProgress(progress, true);
     }
 }
