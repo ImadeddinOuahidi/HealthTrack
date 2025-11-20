@@ -1,86 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="#F5F5F5"
-    android:padding="20dp">
+    android:background="?attr/colorSurfaceContainerLowest"
+    tools:context=".RelaxationActivity">
 
-    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="48dp"
         android:text="Focus Timer"
-        android:textSize="24sp"
+        android:textAppearance="?attr/textAppearanceHeadlineSmall"
         android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginBottom="30dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Timer Display -->
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/timerProgress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:progress="100"
+        app:indicatorSize="280dp"
+        app:indicatorColor="#94d8d2"
+        app:trackColor="#94d8d2"
+        app:trackThickness="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/fabPlayPause"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
     <TextView
         android:id="@+id/txtTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="25:00"
-        android:textSize="48sp"
+        android:textAppearance="?attr/textAppearanceDisplayMedium"
         android:textStyle="bold"
-        android:textColor="@android:color/holo_blue_dark"
-        android:layout_marginBottom="30dp" />
+        app:layout_constraintBottom_toBottomOf="@+id/timerProgress"
+        app:layout_constraintEnd_toEndOf="@+id/timerProgress"
+        app:layout_constraintStart_toStartOf="@+id/timerProgress"
+        app:layout_constraintTop_toTopOf="@id/timerProgress" />
 
-    <!-- Timer Buttons -->
-    <LinearLayout
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabPlayPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center">
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Start Timer"
+        android:src="@drawable/ic_play"
+        app:elevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/durationChips"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/btnStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start"
-            android:backgroundTint="@android:color/holo_green_dark"
-            android:textColor="@android:color/white"
-            android:layout_marginEnd="12dp" />
-
-        <Button
-            android:id="@+id/btnStop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Stop"
-            android:backgroundTint="@android:color/holo_red_dark"
-            android:textColor="@android:color/white"
-            android:layout_marginEnd="12dp" />
-
-        <Button
-            android:id="@+id/btnReset"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Reset"
-            android:backgroundTint="@android:color/holo_orange_dark"
-            android:textColor="@android:color/white" />
-    </LinearLayout>
-
-    <!-- Relaxation Reminder -->
-    <TextView
-        android:id="@+id/tvTip"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnReset"
+        style="?attr/materialIconButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tip: Take deep breaths during breaks."
-        android:textSize="16sp"
-        android:textStyle="italic"
-        android:textColor="@android:color/darker_gray"
-        android:layout_marginTop="30dp" />
+        app:icon="@drawable/ic_reset"
+        app:iconSize="32dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fabPlayPause"
+        app:layout_constraintStart_toEndOf="@+id/fabPlayPause"
+        app:layout_constraintTop_toTopOf="@+id/fabPlayPause" />
 
-    <!-- Hydration Reminder Image -->
-    <ImageView
-        android:id="@+id/imgHydration"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_marginTop="20dp"
-        android:src="@android:drawable/ic_menu_gallery"
-        android:contentDescription="Hydration Reminder Icon" />
-</LinearLayout>
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/durationChips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip15min"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="15 min" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip25min"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="25 min" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip45min"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="45 min" />
+    </com.google.android.material.chip.ChipGroup>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
