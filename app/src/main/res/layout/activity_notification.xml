@@ -2,7 +2,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/notification"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSurfaceContainerLowest"
@@ -24,13 +23,12 @@
             android:textAppearance="?attr/textAppearanceHeadlineSmall"
             android:textStyle="bold" />
 
-        <!-- Hydration -->
+        <!-- Hydration Reminder Card -->
         <com.google.android.material.card.MaterialCardView
-            style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardElevation="0dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -39,43 +37,64 @@
                 android:background="#e6f5f4">
 
                 <ImageView
-                    android:id="@+id/hydrationIcon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:id="@+id/hydration_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/hydration"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/hydration_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Hydration Reminder"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/switchHydration"
-                    app:layout_constraintStart_toEndOf="@id/hydrationIcon"
+                    app:layout_constraintStart_toEndOf="@id/hydration_icon"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchHydration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/hydration_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Get reminders at a regular interval."
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="@id/hydration_title"
+                    app:layout_constraintTop_toBottomOf="@id/hydration_title" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilHydrationInterval"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="Interval (minutes)"
+                    app:layout_constraintTop_toBottomOf="@id/hydration_desc">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etHydrationInterval"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number" />
+                </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Sleep -->
+        <!-- Sleep Reminder Card -->
         <com.google.android.material.card.MaterialCardView
-            style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardElevation="0dp">
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -84,43 +103,60 @@
                 android:background="#e6f5f4">
 
                 <ImageView
-                    android:id="@+id/sleepIcon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:id="@+id/sleep_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/sleep"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/sleep_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:text="Sleep Reminder"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/switchSleep"
-                    app:layout_constraintStart_toEndOf="@id/sleepIcon"
+                    app:layout_constraintStart_toEndOf="@id/sleep_icon"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchSleep"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/sleep_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Get a reminder for your bedtime."
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="@id/sleep_title"
+                    app:layout_constraintTop_toBottomOf="@id/sleep_title" />
+
+                <TextView
+                    android:id="@+id/tvSleepTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/time_selector_background"
+                    android:padding="16dp"
+                    android:text="Select Time"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintTop_toBottomOf="@id/sleep_desc" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Steps -->
+        <!-- Steps Reminder Card -->
         <com.google.android.material.card.MaterialCardView
-            style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardElevation="0dp">
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="16dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -129,89 +165,61 @@
                 android:background="#e6f5f4">
 
                 <ImageView
-                    android:id="@+id/stepsIcon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:id="@+id/steps_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
                     android:src="@drawable/footstep"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/steps_title"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="Step Goal Reminder"
+                    android:text="Daily Steps Reminder"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/switchSteps"
-                    app:layout_constraintStart_toEndOf="@id/stepsIcon"
+                    app:layout_constraintStart_toEndOf="@id/steps_icon"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/switchSteps"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Challenges -->
-        <com.google.android.material.card.MaterialCardView
-            style="?attr/materialCardViewFilledStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardElevation="0dp">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:background="#e6f5f4">
-
-                <ImageView
-                    android:id="@+id/challengesIcon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/medal_"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/steps_desc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Challenge Updates"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/switchChallenges"
-                    app:layout_constraintStart_toEndOf="@id/challengesIcon"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="Get a reminder to complete your steps."
+                    android:textAppearance="?attr/textAppearanceBodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    app:layout_constraintStart_toStartOf="@id/steps_title"
+                    app:layout_constraintTop_toBottomOf="@id/steps_title" />
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/switchChallenges"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:id="@+id/tvStepsTime"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/time_selector_background"
+                    android:padding="16dp"
+                    android:text="Select Time"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    app:layout_constraintTop_toBottomOf="@id/steps_desc" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/clearAllBTN"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="wrap_content"
+            android:id="@+id/btnSaveReminders"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="Clear All Notifications"
-            android:textColor="?attr/colorError" />
+            android:paddingVertical="14dp"
+            android:text="Save Reminders"
+            android:backgroundTint="#94d8d2"/>
 
     </LinearLayout>
 </ScrollView>

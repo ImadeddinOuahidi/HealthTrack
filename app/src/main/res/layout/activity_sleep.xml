@@ -119,6 +119,7 @@
                     android:layout_marginTop="20dp"
                     android:paddingVertical="12dp"
                     android:text="Save Sleep Log"
+                    android:backgroundTint="#94d8d2"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/qualityLayout" />
@@ -150,10 +151,24 @@
                     android:text="Weekly Sleep Pattern"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/sleepGraph"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp" />
+                    android:layout_height="200dp">
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/sleepGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/noDataTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="No sleep data to display."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:visibility="gone" />
+                </FrameLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

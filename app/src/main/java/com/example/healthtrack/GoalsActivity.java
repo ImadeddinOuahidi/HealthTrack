@@ -1,19 +1,23 @@
 package com.example.healthtrack;
 
-import static com.example.healthtrack.MainActivity.KEY_LOGGED_IN_USER;
-import static com.example.healthtrack.MainActivity.SESSION_PREFS_NAME;
-
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.slider.Slider;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Locale;
 
@@ -23,7 +27,8 @@ public class GoalsActivity extends AppCompatActivity {
     private TextInputEditText hydrationGoalValueET, sleepGoalValueET, stepsGoalValueET;
     private Button btnSaveGoals;
 
-    private SharedPreferences goalsPreferences;
+    private DatabaseReference mDatabase;
+    private FirebaseUser currentUser;
     private boolean isUpdatingFromSlider = false;
 
     @Override
@@ -31,15 +36,12 @@ public class GoalsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_goals);
 
-        SharedPreferences sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
-        String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
-
-        if (loggedInUser == null) {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
             finish();
             return;
         }
-
-        goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
 
         // Sliders
         sliderHydrationGoal = findViewById(R.id.sliderHydrationGoal);
@@ -92,26 +94,39 @@ public class GoalsActivity extends AppCompatActivity {
     }
 
     private void loadGoals() {
-        int hydrationGoal = goalsPreferences.getInt("hydration_goal", 2000);
-        float sleepGoal = goalsPreferences.getFloat("sleep_goal", 8.0f);
-        int stepGoal = goalsPreferences.getInt("steps_goal", 10000);
+        mDatabase.child("goals").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer hydrationGoal = snapshot.child("hydration_goal").getValue(Integer.class);
+                    Float sleepGoal = snapshot.child("sleep_goal").getValue(Float.class);
+                    Integer stepGoal = snapshot.child("steps_goal").getValue(Integer.class);
 
-        sliderHydrationGoal.setValue(hydrationGoal);
-        sliderSleepGoal.setValue(sleepGoal);
-        sliderStepGoal.setValue(stepGoal);
+                    sliderHydrationGoal.setValue(hydrationGoal != null ? hydrationGoal : 2000);
+                    sliderSleepGoal.setValue(sleepGoal != null ? sleepGoal : 8.0f);
+                    sliderStepGoal.setValue(stepGoal != null ? stepGoal : 10000);
 
-        hydrationGoalValueET.setText(String.valueOf(hydrationGoal));
-        sleepGoalValueET.setText(String.valueOf(sleepGoal));
-        stepsGoalValueET.setText(String.valueOf(stepGoal));
+                    hydrationGoalValueET.setText(String.valueOf(hydrationGoal != null ? hydrationGoal : 2000));
+                    sleepGoalValueET.setText(String.valueOf(sleepGoal != null ? sleepGoal : 8.0f));
+                    stepsGoalValueET.setText(String.valueOf(stepGoal != null ? stepGoal : 10000));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
     private void saveGoals() {
         try {
-            SharedPreferences.Editor editor = goalsPreferences.edit();
-            editor.putInt("hydration_goal", Integer.parseInt(hydrationGoalValueET.getText().toString()));
-            editor.putFloat("sleep_goal", Float.parseFloat(sleepGoalValueET.getText().toString()));
-            editor.putInt("steps_goal", Integer.parseInt(stepsGoalValueET.getText().toString()));
-            editor.apply();
+            mDatabase.child("goals/hydration_goal").setValue(Integer.parseInt(hydrationGoalValueET.getText().toString()));
+            mDatabase.child("goals/sleep_goal").setValue(Float.parseFloat(sleepGoalValueET.getText().toString()));
+            mDatabase.child("goals/steps_goal").setValue(Integer.parseInt(stepsGoalValueET.getText().toString()));
+            
+            mDatabase.child("achievements/goal_setter").setValue(true);
+
             Toast.makeText(this, "Goals saved successfully!", Toast.LENGTH_SHORT).show();
         } catch (NumberFormatException e) {
             Toast.makeText(this, "Please enter valid numbers for all goals.", Toast.LENGTH_SHORT).show();
@@ -128,7 +143,8 @@ public class GoalsActivity extends AppCompatActivity {
         }
 
         @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -139,12 +155,13 @@ public class GoalsActivity extends AppCompatActivity {
                         slider.setValue(value);
                     }
                 } catch (NumberFormatException e) {
-                    // Ignore, let the user continue typing
+                    // Ignore
                 }
             }
         }
 
         @Override
-        public void afterTextChanged(Editable s) { }
+        public void afterTextChanged(Editable s) {
+        }
     }
 }

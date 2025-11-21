@@ -1,18 +1,22 @@
 package com.example.healthtrack;
 
-import static com.example.healthtrack.MainActivity.KEY_LOGGED_IN_USER;
-import static com.example.healthtrack.MainActivity.SESSION_PREFS_NAME;
-
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,71 +24,42 @@ import java.util.Locale;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    // Buttons
     private MaterialCardView hydrationButton, sleepButton, stepsButton, goalsButton;
     private MaterialCardView focusTimerButton, achievementsButton, reportsButton, notificationsButton;
-
-    // TextViews
     private TextView userNameTV, hydrationLabelTV, sleepLabelTV, stepsLabelTV, profileInitialTV;
-
-    // Progress Indicators
     private LinearProgressIndicator hydrationPB, sleepPB, stepsPB;
-
-    // Settings
     private ImageButton logoutIBTN;
 
-    // SharedPreferences
-    private SharedPreferences sessionManager, userPreferences, goalsPreferences;
-    private SharedPreferences hydrationPrefs;
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+    private FirebaseUser currentUser;
 
-    // Date format
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
-    // Hydration goal
-    private final int hydrationGoal = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        // Session
-        sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
-        String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
-
-        if (loggedInUser == null) {
+        mAuth = FirebaseAuth.getInstance();
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser == null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
 
-        // User & goals prefs
-        userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
-        goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
-        hydrationPrefs = getSharedPreferences("HydrationPrefs", MODE_PRIVATE);
-
-        // User name and initial
+        // Views
         userNameTV = findViewById(R.id.userNameTV);
         profileInitialTV = findViewById(R.id.profileInitialTV);
-        String username = userPreferences.getString("username", "User");
-        userNameTV.setText(username);
-        if (!username.isEmpty()) {
-            profileInitialTV.setText(String.valueOf(username.charAt(0)).toUpperCase());
-        }
-
-        // Settings button
-        logoutIBTN = findViewById(R.id.logoutIBTN);
-        logoutIBTN.setOnClickListener(v -> logout());
-
-        // Labels & ProgressBars
         hydrationLabelTV = findViewById(R.id.hydrationLabelTV);
         hydrationPB = findViewById(R.id.hydrationPB);
         sleepLabelTV = findViewById(R.id.sleepLabelTV);
         sleepPB = findViewById(R.id.sleepPB);
         stepsLabelTV = findViewById(R.id.stepsLabelTV);
         stepsPB = findViewById(R.id.stepsPB);
-
-        // Buttons
+        logoutIBTN = findViewById(R.id.logoutIBTN);
         hydrationButton = findViewById(R.id.hydrationBTN);
         sleepButton = findViewById(R.id.sleepBTN);
         stepsButton = findViewById(R.id.stepsBTN);
@@ -95,11 +70,15 @@ public class DashboardActivity extends AppCompatActivity {
         notificationsButton = findViewById(R.id.notificationsBTN);
 
         setupClickListeners();
-        updateUI();
+        loadData();
     }
 
     private void setupClickListeners() {
-        // Full app navigation
+        logoutIBTN.setOnClickListener(v -> {
+            mAuth.signOut();
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        });
         hydrationButton.setOnClickListener(v -> startActivity(new Intent(this, HydrationActivity.class)));
         sleepButton.setOnClickListener(v -> startActivity(new Intent(this, SleepActivity.class)));
         stepsButton.setOnClickListener(v -> startActivity(new Intent(this, StepCounterActivity.class)));
@@ -110,63 +89,66 @@ public class DashboardActivity extends AppCompatActivity {
         notificationsButton.setOnClickListener(v -> startActivity(new Intent(this, NotificationActivity.class)));
     }
 
-    private void updateUI() {
-        updateHydrationUI();
-        updateSleepUI();
-        updateStepsUI();
+    private void loadData() {
+        // Load profile
+        mDatabase.child("profile").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String username = snapshot.child("username").getValue(String.class);
+                    userNameTV.setText(username);
+                    if (username != null && !username.isEmpty()) {
+                        profileInitialTV.setText(String.valueOf(username.charAt(0)).toUpperCase());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
+
+        // Load goals and daily logs
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String today = sdf.format(Calendar.getInstance().getTime());
+                    // Goals
+                    Integer hydrationGoal = snapshot.child("goals/hydration_goal").getValue(Integer.class);
+                    Float sleepGoal = snapshot.child("goals/sleep_goal").getValue(Float.class);
+                    Integer stepGoal = snapshot.child("goals/steps_goal").getValue(Integer.class);
+
+                    // Daily logs
+                    Integer currentHydration = snapshot.child("daily_logs/" + today + "/hydration").getValue(Integer.class);
+                    Float currentSleep = snapshot.child("daily_logs/" + today + "/sleep").getValue(Float.class);
+                    Integer currentSteps = snapshot.child("daily_logs/" + today + "/steps").getValue(Integer.class);
+
+                    updateHydrationUI(currentHydration != null ? currentHydration : 0, hydrationGoal != null ? hydrationGoal : 2000);
+                    updateSleepUI(currentSleep != null ? currentSleep : 0f, sleepGoal != null ? sleepGoal : 8f);
+                    updateStepsUI(currentSteps != null ? currentSteps : 0, stepGoal != null ? stepGoal : 10000);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
 
-    private void updateHydrationUI() {
-        // Hydration from daily total prefs (branch 2 logic)
-        int dailyTotal = hydrationPrefs.getInt("dailyTotal", 0) + hydrationPrefs.getInt("hydrationBreak", 0) * 250;
-
-        // Hydration from user prefs (branch 1 logic)
-        String today = sdf.format(Calendar.getInstance().getTime());
-        int currentHydration = userPreferences.getInt("hydration_" + today, 0);
-        int dailyGoalUser = goalsPreferences.getInt("hydration_goal", hydrationGoal);
-
-        // Merge both for display
-        int totalHydration = Math.max(dailyTotal, currentHydration);
-        int maxGoal = Math.max(dailyGoalUser, hydrationGoal);
-
-        hydrationLabelTV.setText(String.format(Locale.getDefault(), "Hydration: %d / %d ml", totalHydration, maxGoal));
-        hydrationPB.setMax(maxGoal);
-        hydrationPB.setProgress(totalHydration);
+    private void updateHydrationUI(int current, int goal) {
+        hydrationLabelTV.setText(String.format(Locale.getDefault(), "Hydration: %d / %d ml", current, goal));
+        hydrationPB.setMax(goal);
+        hydrationPB.setProgress(current);
     }
 
-    private void updateSleepUI() {
-        String today = sdf.format(Calendar.getInstance().getTime());
-        float currentSleep = userPreferences.getFloat("sleep_" + today, 0f);
-        float dailyGoal = goalsPreferences.getFloat("sleep_goal", 8f);
-        sleepLabelTV.setText(String.format(Locale.getDefault(), "Sleep: %.1f / %.1f hrs", currentSleep, dailyGoal));
-        sleepPB.setMax((int) (dailyGoal * 10));
-        sleepPB.setProgress((int) (currentSleep * 10));
+    private void updateSleepUI(float current, float goal) {
+        sleepLabelTV.setText(String.format(Locale.getDefault(), "Sleep: %.1f / %.1f hrs", current, goal));
+        sleepPB.setMax((int) (goal * 10));
+        sleepPB.setProgress((int) (current * 10));
     }
 
-    private void updateStepsUI() {
-        String today = sdf.format(Calendar.getInstance().getTime());
-        int currentSteps = userPreferences.getInt("steps_" + today, 0);
-        int dailyGoal = goalsPreferences.getInt("steps_goal", 10000);
-        stepsLabelTV.setText(String.format(Locale.getDefault(), "Steps: %d / %d", currentSteps, dailyGoal));
-        stepsPB.setMax(dailyGoal);
-        stepsPB.setProgress(currentSteps);
-    }
-
-    private void logout() {
-        sessionManager.edit().remove(KEY_LOGGED_IN_USER).apply();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
-        if (loggedInUser != null) {
-            userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
-            goalsPreferences = getSharedPreferences("goals_prefs_" + loggedInUser, MODE_PRIVATE);
-            updateUI();
-        }
+    private void updateStepsUI(int current, int goal) {
+        stepsLabelTV.setText(String.format(Locale.getDefault(), "Steps: %d / %d", current, goal));
+        stepsPB.setMax(goal);
+        stepsPB.setProgress(current);
     }
 }

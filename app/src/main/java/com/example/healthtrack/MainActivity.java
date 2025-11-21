@@ -1,50 +1,49 @@
 package com.example.healthtrack;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText usernameEditText, passwordEditText;
-    private EditText usernameRegEditText, passwordRegEditText, ageEditText, weightEditText, heightEditText;
-    private Button loginButton, registerButton;
+    private TextInputEditText usernameEditText, passwordEditText;
+    private TextInputEditText usernameRegEditText, passwordRegEditText, ageEditText, weightEditText, heightEditText;
+    private Button btnLogin, btnRegister;
     private LinearLayout loginForm, registerForm;
-    private SharedPreferences sessionManager;
+    private MaterialButtonToggleGroup toggleButtons;
 
-    public static final String SESSION_PREFS_NAME = "session_prefs";
-    public static final String KEY_LOGGED_IN_USER = "logged_in_user";
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // if already logged in
-        if (sessionManager.contains(KEY_LOGGED_IN_USER)) {
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
             navigateToDashboard();
             return;
         }
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         usernameEditText = findViewById(R.id.edtUsername);
         passwordEditText = findViewById(R.id.edtPassword);
@@ -53,10 +52,28 @@ public class MainActivity extends AppCompatActivity {
         ageEditText = findViewById(R.id.edtAge);
         weightEditText = findViewById(R.id.edtWeight);
         heightEditText = findViewById(R.id.edtHeight);
-        loginButton = findViewById(R.id.btnLogin);
-        registerButton = findViewById(R.id.btnRegister);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnRegister = findViewById(R.id.btnRegister);
         loginForm = findViewById(R.id.login_form);
         registerForm = findViewById(R.id.register_form);
+        toggleButtons = findViewById(R.id.toggle_buttons);
+
+        setupToggleListener();
+
+        btnLogin.setOnClickListener(this::handleLogin);
+        btnRegister.setOnClickListener(this::handleRegistration);
+    }
+
+    private void setupToggleListener() {
+        toggleButtons.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (isChecked) {
+                if (checkedId == R.id.show_login_button) {
+                    showLogin(null);
+                } else if (checkedId == R.id.show_register_button) {
+                    showRegister(null);
+                }
+            }
+        });
     }
 
     public void showLogin(View view) {
@@ -70,82 +87,62 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void handleLogin(View v) {
-        String username = usernameEditText.getText().toString().trim();
+        String email = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString();
 
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (password.length() < 6) {
-            Toast.makeText(this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Stubbed validation (simple, local check)
-        SharedPreferences userPrefs = getSharedPreferences("user_prefs_" + username, MODE_PRIVATE);
-        String registeredPassword = userPrefs.getString("password", null);
-
-        if (registeredPassword != null && registeredPassword.equals(password)) {
-            sessionManager.edit().putString(KEY_LOGGED_IN_USER, username).apply();
-            navigateToDashboard();
-        } else {
-            Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();
-        }
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        navigateToDashboard();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     public void handleRegistration(View v) {
-        String username = usernameRegEditText.getText().toString().trim();
+        String email = usernameRegEditText.getText().toString().trim();
         String password = passwordRegEditText.getText().toString();
-        String ageStr = ageEditText.getText().toString();
-        String weightStr = weightEditText.getText().toString();
-        String heightStr = heightEditText.getText().toString();
+        final String username = email.split("@")[0]; // Simple username generation
+        final String age = ageEditText.getText().toString();
+        final String weight = weightEditText.getText().toString();
+        final String height = heightEditText.getText().toString();
 
-        // validation
-        if (username.isEmpty() || password.isEmpty() || ageStr.isEmpty() ||
-                weightStr.isEmpty() || heightStr.isEmpty()) {
-            Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty() || age.isEmpty() || weight.isEmpty() || height.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (password.length() < 6) {
-            Toast.makeText(this, "Password must be at least 6 characters long", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            writeNewUser(user.getUid(), username, email, age, weight, height);
+                        }
+                        navigateToDashboard();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Registration failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
-        try {
-            int age = Integer.parseInt(ageStr);
-            if (age <= 0) {
-                Toast.makeText(this, "Please enter a valid positive age", Toast.LENGTH_SHORT).show();
-                return;
-            }
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Age must be a number", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void writeNewUser(String userId, String username, String email, String age, String weight, String height) {
+        Map<String, Object> profile = new HashMap<>();
+        profile.put("username", username);
+        profile.put("email", email);
+        profile.put("age", age);
+        profile.put("weight", weight);
+        profile.put("height", height);
 
-        // check if user exists
-        SharedPreferences userCheck = getSharedPreferences("user_prefs_" + username, MODE_PRIVATE);
-        if (userCheck.contains("username")) {
-            Toast.makeText(this, "Username already exists", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // save new user data (stub)
-        SharedPreferences newUserPrefs = getSharedPreferences("user_prefs_" + username, MODE_PRIVATE);
-        SharedPreferences.Editor editor = newUserPrefs.edit();
-        editor.putString("username", username);
-        editor.putString("password", password);
-        editor.putString("age", ageStr);
-        editor.putString("weight", weightStr);
-        editor.putString("height", heightStr);
-        editor.apply();
-
-        sessionManager.edit().putString(KEY_LOGGED_IN_USER, username).apply();
-
-        Toast.makeText(this, "Registration successful! Welcome, " + username + "!", Toast.LENGTH_LONG).show();
-        navigateToDashboard();
+        mDatabase.child("users").child(userId).child("profile").setValue(profile);
     }
 
     private void navigateToDashboard() {
