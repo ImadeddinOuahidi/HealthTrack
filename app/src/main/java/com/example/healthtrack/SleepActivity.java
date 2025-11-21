@@ -1,27 +1,33 @@
 package com.example.healthtrack;
 
-import static com.example.healthtrack.MainActivity.KEY_LOGGED_IN_USER;
-import static com.example.healthtrack.MainActivity.SESSION_PREFS_NAME;
-
 import android.app.TimePickerDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.StaticLabelsFormatter;
-import com.jjoe64.graphview.series.BarGraphSeries;
-import com.jjoe64.graphview.series.DataPoint;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,31 +41,29 @@ public class SleepActivity extends AppCompatActivity {
     private Chip chipBedtime, chipWakeup;
     private AutoCompleteTextView spinnerSleepQuality;
     private Button btnSaveSleep;
-    private GraphView sleepGraph;
-    private TextView durationTV;
+    private BarChart sleepGraph;
+    private TextView durationTV, noDataTV;
     private CircularProgressIndicator sleepCircularProgress;
 
-    private SharedPreferences userPreferences;
+    private DatabaseReference mDatabase;
+    private FirebaseUser currentUser;
+
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-    private final String SLEEP_LOG_PREFIX = "sleep_log_";
     private Date bedtime, wakeupTime;
-    private final float sleepGoal = 8.0f; // 8 hours goal
+    private float sleepGoal = 8.0f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sleep);
 
-        SharedPreferences sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
-        String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
-
-        if (loggedInUser == null) {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
             finish();
             return;
         }
-
-        userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
 
         chipBedtime = findViewById(R.id.chipBedtime);
         chipWakeup = findViewById(R.id.chipWakeup);
@@ -67,13 +71,14 @@ public class SleepActivity extends AppCompatActivity {
         btnSaveSleep = findViewById(R.id.btnSaveSleep);
         sleepGraph = findViewById(R.id.sleepGraph);
         durationTV = findViewById(R.id.durationTV);
+        noDataTV = findViewById(R.id.noDataTV);
         sleepCircularProgress = findViewById(R.id.sleepCircularProgress);
 
         setupSpinners();
         setupTimePickers();
         btnSaveSleep.setOnClickListener(v -> saveSleepLog());
 
-        loadWeeklySleepData();
+        loadGoalAndThenData();
     }
 
     private void setupTimePickers() {
@@ -86,7 +91,7 @@ public class SleepActivity extends AppCompatActivity {
         int hour = cal.get(Calendar.HOUR_OF_DAY);
         int minute = cal.get(Calendar.MINUTE);
 
-        TimePickerDialog timePickerDialog = new TimePickerDialog(this,
+        new TimePickerDialog(this,
                 (view, hourOfDay, minuteOfHour) -> {
                     cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     cal.set(Calendar.MINUTE, minuteOfHour);
@@ -97,8 +102,7 @@ public class SleepActivity extends AppCompatActivity {
                     }
                     chip.setText(timeFormat.format(cal.getTime()));
                     calculateAndShowDuration();
-                }, hour, minute, false);
-        timePickerDialog.show();
+                }, hour, minute, false).show();
     }
 
     private void calculateAndShowDuration() {
@@ -140,44 +144,100 @@ public class SleepActivity extends AppCompatActivity {
         String today = sdf.format(Calendar.getInstance().getTime());
         String logEntry = hours + "," + quality;
 
-        SharedPreferences.Editor editor = userPreferences.edit();
-        editor.putString(SLEEP_LOG_PREFIX + today, logEntry);
-        editor.putFloat("sleep_" + today, hours); // For dashboard compatibility
-        editor.apply();
+        DatabaseReference todayRef = mDatabase.child("daily_logs").child(today);
+        todayRef.child("sleep").setValue(hours);
+        todayRef.child("sleep_log").setValue(logEntry);
 
         Toast.makeText(this, "Sleep logged successfully!", Toast.LENGTH_SHORT).show();
-        loadWeeklySleepData(); // Refresh graph
+        
+        checkAchievements(hours);
+        loadGoalAndThenData();
+    }
+
+    private void checkAchievements(float hours) {
+        if (hours >= 8) {
+            mDatabase.child("achievements/sleep_initiate").setValue(true);
+        }
+    }
+
+    private void loadGoalAndThenData() {
+        mDatabase.child("goals/sleep_goal").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Float goal = snapshot.getValue(Float.class);
+                    if (goal != null) {
+                        sleepGoal = goal;
+                    }
+                }
+                loadWeeklySleepData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                loadWeeklySleepData();
+            }
+        });
     }
 
     private void loadWeeklySleepData() {
-        List<DataPoint> dataPoints = new ArrayList<>();
-        List<String> labels = new ArrayList<>();
-        Calendar cal = Calendar.getInstance();
+        mDatabase.child("daily_logs").limitToLast(7).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                final List<BarEntry> entries = new ArrayList<>();
+                final List<String> labels = new ArrayList<>();
+                if (snapshot.exists()) {
+                    int i = 0;
+                    for (DataSnapshot daySnapshot : snapshot.getChildren()) {
+                        Float hours = daySnapshot.child("sleep").getValue(Float.class);
+                        if (hours != null) {
+                            entries.add(new BarEntry(i, hours));
+                            labels.add(daySnapshot.getKey().substring(5)); // Format to MM-dd
+                            i++;
+                        }
+                    }
+                }
 
-        for (int i = 6; i >= 0; i--) {
-            cal.setTime(new Date());
-            cal.add(Calendar.DAY_OF_YEAR, -i);
-            String dateKey = sdf.format(cal.getTime());
-            String logEntry = userPreferences.getString(SLEEP_LOG_PREFIX + dateKey, "0,N/A");
+                if (entries.isEmpty()) {
+                    sleepGraph.setVisibility(View.GONE);
+                    noDataTV.setVisibility(View.VISIBLE);
+                } else {
+                    sleepGraph.setVisibility(View.VISIBLE);
+                    noDataTV.setVisibility(View.GONE);
 
-            float hours = Float.parseFloat(logEntry.split(",")[0]);
-            dataPoints.add(new DataPoint(6 - i, hours));
+                    BarDataSet dataSet = new BarDataSet(entries, "Sleep Hours");
+                    dataSet.setColor(getResources().getColor(R.color.purple_500));
 
-            SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
-            labels.add(dayFormat.format(cal.getTime()));
-        }
+                    BarData barData = new BarData(dataSet);
+                    sleepGraph.setData(barData);
 
-        BarGraphSeries<DataPoint> series = new BarGraphSeries<>(dataPoints.toArray(new DataPoint[0]));
-        series.setSpacing(50);
+                    XAxis xAxis = sleepGraph.getXAxis();
+                    xAxis.setValueFormatter(new ValueFormatter() {
+                        @Override
+                        public String getFormattedValue(float value) {
+                            int index = (int) value;
+                            if(index >= 0 && index < labels.size()){
+                                return labels.get(index);
+                            }
+                            return "";
+                        }
+                    });
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                    xAxis.setGranularity(1f);
+                    xAxis.setGranularityEnabled(true);
 
-        sleepGraph.removeAllSeries();
-        sleepGraph.addSeries(series);
+                    sleepGraph.getAxisRight().setEnabled(false);
+                    sleepGraph.getDescription().setEnabled(false);
+                    sleepGraph.invalidate();
+                }
+            }
 
-        StaticLabelsFormatter staticLabelsFormatter = new StaticLabelsFormatter(sleepGraph);
-        staticLabelsFormatter.setHorizontalLabels(labels.toArray(new String[0]));
-        sleepGraph.getGridLabelRenderer().setLabelFormatter(staticLabelsFormatter);
-        sleepGraph.getViewport().setYAxisBoundsManual(true);
-        sleepGraph.getViewport().setMinY(0);
-        sleepGraph.getViewport().setMaxY(12);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                sleepGraph.setVisibility(View.GONE);
+                noDataTV.setVisibility(View.VISIBLE);
+                Toast.makeText(SleepActivity.this, "Failed to load sleep data.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

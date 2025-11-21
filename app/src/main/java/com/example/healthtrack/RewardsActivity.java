@@ -1,68 +1,92 @@
 package com.example.healthtrack;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RewardsActivity extends AppCompatActivity {
 
-    private SharedPreferences userPreferences;
-    private String loggedInUser;
+    private RecyclerView achievementsRV;
+    private AchievementAdapter adapter;
+    private List<Achievement> masterAchievementList;
+
+    private DatabaseReference mDatabase;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_rewards);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.rewards), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
-        loggedInUser = getSharedPreferences(MainActivity.SESSION_PREFS_NAME, MODE_PRIVATE)
-                .getString(MainActivity.KEY_LOGGED_IN_USER, null);
-
-        if (loggedInUser == null) {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
             finish();
             return;
         }
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
 
-        userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
+        achievementsRV = findViewById(R.id.achievementsRV);
+        achievementsRV.setLayoutManager(new LinearLayoutManager(this));
 
-        setupBadgeClickListeners();
+        initializeAchievements();
+
+        adapter = new AchievementAdapter(this, masterAchievementList);
+        achievementsRV.setAdapter(adapter);
+
+        loadUserAchievements();
     }
 
-    private void setupBadgeClickListeners() {
-        int[] badgeIds = {
-                R.id.badge1, R.id.badge2, R.id.badge3, R.id.badge4, R.id.badge5
-        };
-        String[] badgeKeys = {
-                "badge_hydration", "badge_sleep", "badge_steps", "badge_focus", "badge_goal"
-        };
-        String[] badgeNames = {
-                "Hydration Streak", "Sleep Champ", "10k Steps", "Focus Master", "Goal Setter"
-        };
+    private void initializeAchievements() {
+        masterAchievementList = new ArrayList<>();
+        // Add all your preset achievements here
+        masterAchievementList.add(new Achievement("first_steps", "First Steps", "Log your first 1,000 steps.", R.drawable.footstep));
+        masterAchievementList.add(new Achievement("hydration_novice", "Hydration Novice", "Log your first 2,000 ml of water.", R.drawable.hydration));
+        masterAchievementList.add(new Achievement("sleep_initiate", "Sleep Initiate", "Log your first 8 hours of sleep.", R.drawable.sleep));
+        masterAchievementList.add(new Achievement("goal_setter", "Goal Setter", "Set your first personal goal.", R.drawable.target));
+        masterAchievementList.add(new Achievement("marathon_runner", "Marathon Runner", "Log a total of 42,195 steps.", R.drawable.footstep));
+        masterAchievementList.add(new Achievement("water_warrior", "Water Warrior", "Log 50,000 ml of water.", R.drawable.hydration));
+        // Add more achievements as needed
+    }
 
-        for (int i = 0; i < badgeIds.length; i++) {
-            LinearLayout badge = findViewById(badgeIds[i]);
-            String key = badgeKeys[i];
-            String name = badgeNames[i];
-            badge.setOnClickListener(v -> {
-                boolean unlocked = userPreferences.getBoolean(key, false);
-                if (unlocked) {
-                    Toast.makeText(this, name + " unlocked!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, name + " is locked. Keep progressing!", Toast.LENGTH_SHORT).show();
+    private void loadUserAchievements() {
+        mDatabase.child("achievements").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Map<String, Boolean> unlockedAchievements = new HashMap<>();
+                    for (DataSnapshot achievementSnapshot : snapshot.getChildren()) {
+                        unlockedAchievements.put(achievementSnapshot.getKey(), achievementSnapshot.getValue(Boolean.class));
+                    }
+
+                    for (Achievement achievement : masterAchievementList) {
+                        if (unlockedAchievements.containsKey(achievement.getId()) && unlockedAchievements.get(achievement.getId())) {
+                            achievement.setUnlocked(true);
+                        }
+                    }
+                    adapter.notifyDataSetChanged();
                 }
-            });
-        }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle error
+            }
+        });
     }
 }

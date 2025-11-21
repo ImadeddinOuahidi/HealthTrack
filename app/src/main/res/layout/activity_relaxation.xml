@@ -51,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:contentDescription="Start Timer"
+        android:backgroundTint="#94d8d2"
         android:src="@drawable/ic_play"
         app:elevation="4dp"
         app:layout_constraintBottom_toTopOf="@+id/durationChips"

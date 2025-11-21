@@ -96,6 +96,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
                 android:text="+250 ml"
+                android:backgroundTint="#94d8d2"
                 app:cornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/hydrationCircularProgress"
@@ -110,6 +111,7 @@
                 android:layout_marginTop="8dp"
                 android:text="+500 ml"
                 app:cornerRadius="8dp"
+                android:backgroundTint="#94d8d2"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/hydrationCircularProgress"
                 app:layout_constraintTop_toBottomOf="@+id/add250BTN" />
@@ -122,6 +124,7 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="8dp"
                 android:text="Custom"
+                android:textColor="@color/black"
                 app:cornerRadius="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/hydrationCircularProgress"
@@ -152,12 +155,26 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logTitle">
+        app:layout_constraintTop_toBottomOf="@id/logTitle">
 
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/hydrationGraph"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <com.github.mikephil.charting.charts.LineChart
+                android:id="@+id/hydrationGraph"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/noDataTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="No hydration data to display."
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:visibility="gone" />
+        </FrameLayout>
 
     </androidx.cardview.widget.CardView>
 

@@ -184,10 +184,24 @@
                     android:text="Weekly Steps"
                     android:textAppearance="?attr/textAppearanceTitleMedium" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/stepsGraph"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp" />
+                    android:layout_height="200dp">
+
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/stepsGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/noDataTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="No steps data to display."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:visibility="gone" />
+                </FrameLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

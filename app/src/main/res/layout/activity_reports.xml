@@ -54,10 +54,24 @@
                     android:text="Average: 0 ml/day"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/hydrationReportGraph"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="180dp" />
+                    android:layout_height="180dp">
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/hydrationReportGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/noHydrationDataTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="No hydration data to display."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -91,10 +105,24 @@
                     android:text="Average: 0.0 hrs/night"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/sleepReportGraph"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="180dp" />
+                    android:layout_height="180dp">
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/sleepReportGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/noSleepDataTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="No sleep data to display."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -127,10 +155,24 @@
                     android:text="Average: 0 steps/day"
                     android:textAppearance="?attr/textAppearanceBodyMedium" />
 
-                <com.jjoe64.graphview.GraphView
-                    android:id="@+id/stepsReportGraph"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="180dp" />
+                    android:layout_height="180dp">
+
+                    <com.github.mikephil.charting.charts.LineChart
+                        android:id="@+id/stepsReportGraph"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+                    <TextView
+                        android:id="@+id/noStepsDataTV"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="No steps data to display."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

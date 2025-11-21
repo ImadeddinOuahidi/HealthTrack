@@ -57,7 +57,7 @@ public class RelaxationActivity extends AppCompatActivity {
 
         durationChips.setOnCheckedChangeListener((group, checkedId) -> {
             if (isTimerRunning) {
-                // Prevent changing duration while timer is running
+                // Prevent changing duration while timer is running, but still doesnt work need to change it
                 return;
             }
             handleDurationChange(checkedId);

@@ -1,24 +1,31 @@
 package com.example.healthtrack;
 
-import static com.example.healthtrack.MainActivity.KEY_LOGGED_IN_USER;
-import static com.example.healthtrack.MainActivity.SESSION_PREFS_NAME;
-
 import android.app.AlertDialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,130 +33,191 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class HydrationActivity extends AppCompatActivity {
 
-    private TextView dailyTotalTV, goalTV;
+    private TextView dailyTotalTV, goalTV, noDataTV;
     private MaterialButton add250BTN, add500BTN, customBTN;
     private CircularProgressIndicator hydrationCircularProgress;
-    private GraphView hydrationGraph;
+    private LineChart hydrationGraph;
 
-    private SharedPreferences userPreferences;
+    private DatabaseReference mDatabase;
+    private FirebaseUser currentUser;
+
     private int currentHydration = 0;
-    private final int hydrationGoal = 2000;
+    private int hydrationGoal = 2000; // Default goal
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-    private final String HYDRATION_ENTRIES_KEY_PREFIX = "hydration_entries_";
+    private final SimpleDateFormat timeSdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hydration);
 
-        SharedPreferences sessionManager = getSharedPreferences(SESSION_PREFS_NAME, MODE_PRIVATE);
-        String loggedInUser = sessionManager.getString(KEY_LOGGED_IN_USER, null);
-
-        if (loggedInUser == null) {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser == null) {
             finish();
             return;
         }
-
-        userPreferences = getSharedPreferences("user_prefs_" + loggedInUser, MODE_PRIVATE);
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users").child(currentUser.getUid());
 
         dailyTotalTV = findViewById(R.id.dailyTotalTV);
         goalTV = findViewById(R.id.goalTV);
         hydrationCircularProgress = findViewById(R.id.hydrationCircularProgress);
         hydrationGraph = findViewById(R.id.hydrationGraph);
+        noDataTV = findViewById(R.id.noDataTV);
         add250BTN = findViewById(R.id.add250BTN);
         add500BTN = findViewById(R.id.add500BTN);
         customBTN = findViewById(R.id.customBTN);
 
-        setupGraph();
-        loadHydrationData();
+        loadGoalAndThenData();
 
         add250BTN.setOnClickListener(v -> addWater(250));
         add500BTN.setOnClickListener(v -> addWater(500));
         customBTN.setOnClickListener(v -> showCustomAddDialog());
     }
 
-    private void setupGraph() {
-        hydrationGraph.getViewport().setXAxisBoundsManual(true);
-        hydrationGraph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(this));
-        hydrationGraph.getGridLabelRenderer().setNumHorizontalLabels(4);
+    private void loadGoalAndThenData() {
+        mDatabase.child("goals/hydration_goal").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    Integer goal = snapshot.getValue(Integer.class);
+                    if (goal != null) {
+                        hydrationGoal = goal;
+                    }
+                }
+                loadHydrationData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                loadHydrationData();
+            }
+        });
     }
 
     private void loadHydrationData() {
         String today = sdf.format(Calendar.getInstance().getTime());
-        Set<String> entries = userPreferences.getStringSet(HYDRATION_ENTRIES_KEY_PREFIX + today, new HashSet<>());
-        List<DataPoint> dataPoints = new ArrayList<>();
-        currentHydration = 0;
+        mDatabase.child("daily_logs").child(today).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                final List<Entry> entries = new ArrayList<>();
+                currentHydration = 0;
 
-        List<String> sortedEntries = new ArrayList<>(entries);
-        Collections.sort(sortedEntries, Comparator.comparingLong(entry -> Long.parseLong(entry.split(":")[0])));
+                if (snapshot.exists()) {
+                    Integer totalHydration = snapshot.child("hydration").getValue(Integer.class);
+                    currentHydration = totalHydration != null ? totalHydration : 0;
 
-        int cumulativeAmount = 0;
-        for (String entry : sortedEntries) {
-            try {
-                long timestamp = Long.parseLong(entry.split(":")[0]);
-                int amount = Integer.parseInt(entry.split(":")[1]);
-                cumulativeAmount += amount;
-                dataPoints.add(new DataPoint(new Date(timestamp), cumulativeAmount));
-            } catch (Exception e) {
-                // Ignore malformed entries
+                    List<String> timeEntries = new ArrayList<>();
+                    for (DataSnapshot entrySnapshot : snapshot.child("hydration_entries").getChildren()) {
+                        timeEntries.add(entrySnapshot.getValue(String.class));
+                    }
+                    Collections.sort(timeEntries, Comparator.comparingLong(entry -> {
+                        try {
+                            return Long.parseLong(entry.split(":")[0]);
+                        } catch (Exception e) {
+                            return 0L;
+                        }
+                    }));
+
+                    int cumulativeAmount = 0;
+                    for (String entry : timeEntries) {
+                        try {
+                            long timestamp = Long.parseLong(entry.split(":")[0]);
+                            int amount = Integer.parseInt(entry.split(":")[1]);
+                            cumulativeAmount += amount;
+                            entries.add(new Entry(timestamp, cumulativeAmount));
+                        } catch (Exception e) {
+                            // Ignore malformed entries
+                        }
+                    }
+                }
+
+                updateGraph(entries);
+                updateUI();
             }
-        }
-        currentHydration = cumulativeAmount;
 
-        if (!dataPoints.isEmpty()) {
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<>(dataPoints.toArray(new DataPoint[0]));
-            series.setDrawDataPoints(true);
-            series.setDataPointsRadius(8);
-            hydrationGraph.addSeries(series);
-
-            hydrationGraph.getViewport().setMinX(dataPoints.get(0).getX());
-            hydrationGraph.getViewport().setMaxX(dataPoints.get(dataPoints.size() - 1).getX());
-        } else {
-            hydrationGraph.removeAllSeries();
-        }
-
-        saveTotalHydration();
-        updateUI();
-    }
-
-    private void saveHydrationEntry(int amount) {
-        String today = sdf.format(Calendar.getInstance().getTime());
-        String entry = System.currentTimeMillis() + ":" + amount;
-        Set<String> entries = userPreferences.getStringSet(HYDRATION_ENTRIES_KEY_PREFIX + today, new HashSet<>());
-        entries.add(entry);
-
-        SharedPreferences.Editor editor = userPreferences.edit();
-        editor.putStringSet(HYDRATION_ENTRIES_KEY_PREFIX + today, entries);
-        editor.apply();
-    }
-
-    private void saveTotalHydration() {
-        String today = sdf.format(Calendar.getInstance().getTime());
-        SharedPreferences.Editor editor = userPreferences.edit();
-        editor.putInt("hydration_" + today, currentHydration);
-        editor.apply();
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                updateGraph(new ArrayList<>());
+            }
+        });
     }
 
     private void addWater(int amount) {
-        currentHydration += amount;
-        saveHydrationEntry(amount);
-        loadHydrationData(); // Reload all data to update chart correctly
-        Toast.makeText(this, amount + " ml added", Toast.LENGTH_SHORT).show();
+        String today = sdf.format(Calendar.getInstance().getTime());
+        DatabaseReference todayRef = mDatabase.child("daily_logs").child(today);
+
+        todayRef.child("hydration").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                int newTotal = (snapshot.exists() && snapshot.getValue(Integer.class) != null ? snapshot.getValue(Integer.class) : 0) + amount;
+                todayRef.child("hydration").setValue(newTotal);
+
+                String entry = System.currentTimeMillis() + ":" + amount;
+                todayRef.child("hydration_entries").push().setValue(entry);
+
+                Toast.makeText(HydrationActivity.this, amount + " ml added", Toast.LENGTH_SHORT).show();
+
+                checkAchievements(newTotal);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) { }
+        });
     }
+
+    private void checkAchievements(int newTotal) {
+        if (newTotal >= 2000) {
+            mDatabase.child("achievements").child("hydration_novice").setValue(true);
+        }
+    }
+
 
     private void updateUI() {
         dailyTotalTV.setText(String.format(Locale.getDefault(), "%d ml", currentHydration));
         goalTV.setText(String.format(Locale.getDefault(), "of %d ml", hydrationGoal));
-        int progress = (int) ((currentHydration * 100.0f) / hydrationGoal);
-        hydrationCircularProgress.setProgress(progress, true);
+        if (hydrationGoal > 0) {
+            int progress = (int) ((currentHydration * 100.0f) / hydrationGoal);
+            hydrationCircularProgress.setProgress(progress, true);
+        }
     }
+    private void updateGraph(List<Entry> entries) {
+        if (entries.isEmpty()) {
+            hydrationGraph.setVisibility(View.GONE);
+            noDataTV.setVisibility(View.VISIBLE);
+        } else {
+            hydrationGraph.setVisibility(View.VISIBLE);
+            noDataTV.setVisibility(View.GONE);
+
+            LineDataSet dataSet = new LineDataSet(entries, "Hydration");
+            dataSet.setColor(getResources().getColor(R.color.purple_500));
+            dataSet.setCircleColor(getResources().getColor(R.color.purple_500));
+            dataSet.setCircleRadius(4f);
+            dataSet.setDrawValues(false);
+
+            LineData lineData = new LineData(dataSet);
+            hydrationGraph.setData(lineData);
+
+            XAxis xAxis = hydrationGraph.getXAxis();
+            xAxis.setValueFormatter(new ValueFormatter() {
+                @Override
+                public String getFormattedValue(float value) {
+                    return timeSdf.format(new Date((long) value));
+                }
+            });
+            xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+            xAxis.setGranularity(1f);
+
+            hydrationGraph.getAxisRight().setEnabled(false);
+            hydrationGraph.getDescription().setEnabled(false);
+            hydrationGraph.invalidate();
+        }
+    }
+
 
     private void showCustomAddDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
