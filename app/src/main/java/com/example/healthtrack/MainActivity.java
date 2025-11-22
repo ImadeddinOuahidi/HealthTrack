@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -38,7 +41,6 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             navigateToDashboard();
@@ -100,8 +102,15 @@ public class MainActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         navigateToDashboard();
                     } else {
-                        Toast.makeText(MainActivity.this, "Authentication failed.",
-                                Toast.LENGTH_SHORT).show();
+                        String errorMessage;
+                        try {
+                            throw task.getException();
+                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                            errorMessage = "Incorrect password or email. Please try again.";
+                        } catch (Exception e) {
+                            errorMessage = "Login failed. Please try again later.";
+                        }
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -109,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     public void handleRegistration(View v) {
         String email = usernameRegEditText.getText().toString().trim();
         String password = passwordRegEditText.getText().toString();
-        final String username = email.split("@")[0]; // Simple username generation
+        final String username = email.split("@")[0];
         final String age = ageEditText.getText().toString();
         final String weight = weightEditText.getText().toString();
         final String height = heightEditText.getText().toString();
@@ -128,8 +137,19 @@ public class MainActivity extends AppCompatActivity {
                         }
                         navigateToDashboard();
                     } else {
-                        Toast.makeText(MainActivity.this, "Registration failed.",
-                                Toast.LENGTH_SHORT).show();
+                        String errorMessage;
+                        try {
+                            throw task.getException();
+                        } catch (FirebaseAuthWeakPasswordException e) {
+                            errorMessage = "Password must be at least 6 characters long.";
+                        } catch (FirebaseAuthInvalidCredentialsException e) {
+                            errorMessage = "Please enter a valid email address.";
+                        } catch (FirebaseAuthUserCollisionException e) {
+                            errorMessage = "This email address is already in use.";
+                        } catch (Exception e) {
+                            errorMessage = "Registration failed. Please try again later.";
+                        }
+                        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                     }
                 });
     }
