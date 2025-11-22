@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:background="#e6f5f4">
+                android:background="@color/colorSecondary">
 
                 <ImageView
                     android:id="@+id/hydration_icon"
@@ -100,7 +100,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:background="#e6f5f4">
+                android:background="@color/colorSecondary">
 
                 <ImageView
                     android:id="@+id/sleep_icon"
@@ -162,7 +162,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
-                android:background="#e6f5f4">
+                android:background="@color/colorSecondary">
 
                 <ImageView
                     android:id="@+id/steps_icon"
@@ -219,7 +219,7 @@
             android:layout_height="wrap_content"
             android:paddingVertical="14dp"
             android:text="Save Reminders"
-            android:backgroundTint="#94d8d2"/>
+            android:backgroundTint="@color/colorPrimary"/>
 
     </LinearLayout>
 </ScrollView>
