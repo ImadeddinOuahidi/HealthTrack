@@ -85,9 +85,9 @@
                     android:value="2000"
                     android:valueFrom="500"
                     android:valueTo="5000"
-                    app:trackColorInactive="#e6f5f4"
-                    app:thumbColor="#94d8d2"
-                    app:trackColorActive="#94d8d2"
+                    app:trackColorInactive="@color/colorSecondary"
+                    app:thumbColor="@color/colorPrimary"
+                    app:trackColorActive="@color/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/hydrationGoalLayout" />
@@ -156,9 +156,9 @@
                     android:value="8.0"
                     android:valueFrom="4.0"
                     android:valueTo="12.0"
-                    app:trackColorInactive="#e6f5f4"
-                    app:thumbColor="#94d8d2"
-                    app:trackColorActive="#94d8d2"
+                    app:trackColorInactive="@color/colorSecondary"
+                    app:thumbColor="@color/colorPrimary"
+                    app:trackColorActive="@color/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sleepGoalLayout" />
@@ -227,9 +227,9 @@
                     android:value="10000"
                     android:valueFrom="1000"
                     android:valueTo="25000"
-                    app:trackColorInactive="#e6f5f4"
-                    app:thumbColor="#94d8d2"
-                    app:trackColorActive="#94d8d2"
+                    app:trackColorInactive="@color/colorSecondary"
+                    app:thumbColor="@color/colorPrimary"
+                    app:trackColorActive="@color/colorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/stepsGoalLayout" />
@@ -244,7 +244,7 @@
             android:layout_marginTop="32dp"
             android:paddingVertical="12dp"
             android:text="Save Goals"
-            app:backgroundTint="#94d8d2"
+            app:backgroundTint="@color/colorPrimary"
             app:layout_constraintTop_toBottomOf="@id/stepsGoalCard" />
 
     </LinearLayout>
