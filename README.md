@@ -22,7 +22,7 @@ To test the application with a pre-populated account, please use the following c
 
 ### APK 
 
-[APK link](https://github.com/ImadeddinOuahidi/HealthTrack/releases/tag/v1.0)
+[APK link](https://github.com/ImadeddinOuahidi/HealthTrack/releases/download/v1.0/app-debug.apk)
 
 ### Supported Devices
 
