@@ -16,12 +16,12 @@ public class AlarmReceiver extends BroadcastReceiver {
         String message = intent.getStringExtra("message");
         int notificationId = intent.getIntExtra("notification_id", 0);
 
-        Intent destinationIntent = new Intent(context, MainActivity.class); // Or any other activity
+        Intent destinationIntent = new Intent(context, MainActivity.class);
         destinationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, destinationIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationHelper.CHANNEL_ID)
-                .setSmallIcon(R.drawable.heathtrack_logo) // Make sure you have this drawable
+                .setSmallIcon(R.drawable.heathtrack_logo)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -32,7 +32,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         try {
             notificationManager.notify(notificationId, builder.build());
         } catch (SecurityException e) {
-            // This can happen if the app doesn't have the POST_NOTIFICATIONS permission
             e.printStackTrace();
         }
     }
