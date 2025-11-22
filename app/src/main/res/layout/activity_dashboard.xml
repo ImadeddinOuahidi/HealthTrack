@@ -132,13 +132,13 @@
 
                         <com.google.android.material.progressindicator.CircularProgressIndicator
                             android:id="@+id/hydrationPB"
-                            android:layout_width="120dp"
-                            android:layout_height="120dp"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
                             android:progress="60"
                             app:indicatorColor="@color/accentBlue"
                             app:trackColor="#E0E0E0"
-                            app:trackThickness="12dp"
-                            app:indicatorSize="120dp"
+                            app:trackThickness="10dp"
+                            app:indicatorSize="90dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -207,13 +207,13 @@
 
                         <com.google.android.material.progressindicator.CircularProgressIndicator
                             android:id="@+id/sleepPB"
-                            android:layout_width="120dp"
-                            android:layout_height="120dp"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
                             android:progress="94"
                             app:indicatorColor="@color/accentPurple"
                             app:trackColor="#E0E0E0"
-                            app:trackThickness="12dp"
-                            app:indicatorSize="120dp"
+                            app:trackThickness="10dp"
+                            app:indicatorSize="90dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -281,13 +281,13 @@
 
                         <com.google.android.material.progressindicator.CircularProgressIndicator
                             android:id="@+id/stepsPB"
-                            android:layout_width="120dp"
-                            android:layout_height="120dp"
+                            android:layout_width="90dp"
+                            android:layout_height="90dp"
                             android:progress="85"
                             app:indicatorColor="@color/accentGreen"
                             app:trackColor="#E0E0E0"
-                            app:trackThickness="12dp"
-                            app:indicatorSize="120dp"
+                            app:trackThickness="10dp"
+                            app:indicatorSize="90dp"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
