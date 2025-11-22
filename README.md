@@ -22,7 +22,7 @@ To test the application with a pre-populated account, please use the following c
 
 ### APK 
 
-[Download APK](app/build/outputs/apk/debug/app-debug.apk)
+
 
 ### Supported Devices
 
