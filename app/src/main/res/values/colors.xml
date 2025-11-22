@@ -1,8 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#94d8d2</color>
-    <color name="colorSecondary">#e6f5f4</color>
+    
+    <!-- Primary Color Scheme - Modern Teal/Cyan -->
+    <color name="colorPrimary">#00B8A9</color>
+    <color name="colorPrimaryDark">#008B7F</color>
+    <color name="colorPrimaryLight">#4DD4C8</color>
+    
+    <!-- Secondary Color Scheme - Soft Mint -->
+    <color name="colorSecondary">#E8F8F5</color>
+    <color name="colorSecondaryDark">#B8E6DC</color>
+    <color name="colorSecondaryLight">#F5FDFB</color>
+    
+    <!-- Accent Colors for Features -->
+    <color name="accentBlue">#4A90E2</color>
+    <color name="accentGreen">#52C41A</color>
+    <color name="accentPurple">#9254DE</color>
+    <color name="accentOrange">#FA8C16</color>
+    
+    <!-- Background Colors -->
+    <color name="backgroundLight">#FAFAFA</color>
+    <color name="backgroundCard">#FFFFFF</color>
+    
+    <!-- Text Colors -->
+    <color name="textPrimary">#212529</color>
+    <color name="textSecondary">#6C757D</color>
+    <color name="textHint">#ADB5BD</color>
+    
+    <!-- Legacy support -->
     <color name="purple_500">#FF6200EE</color>
 </resources>
