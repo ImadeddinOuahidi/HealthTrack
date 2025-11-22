@@ -1,11 +1,14 @@
 package com.example.healthtrack;
 
+import android.app.AlertDialog;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +21,7 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -69,6 +73,15 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         stepsGraph = findViewById(R.id.stepsGraph);
         noDataTV = findViewById(R.id.noDataTV);
 
+        // Setup manual step addition buttons
+        MaterialButton addSteps1000Btn = findViewById(R.id.addSteps1000Btn);
+        MaterialButton addSteps5000Btn = findViewById(R.id.addSteps5000Btn);
+        MaterialButton addStepsCustomBtn = findViewById(R.id.addStepsCustomBtn);
+
+        addSteps1000Btn.setOnClickListener(v -> addSteps(1000));
+        addSteps5000Btn.setOnClickListener(v -> addSteps(5000));
+        addStepsCustomBtn.setOnClickListener(v -> showCustomAddStepsDialog());
+
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER) != null) {
             stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
@@ -116,17 +129,34 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
         int progress = (int) ((stepCount * 100.0f) / stepGoal);
         stepsCircularProgress.setProgress(progress, true);
 
-        double distanceKm = stepCount * 0.000762;
-        double caloriesBurned = stepCount * 0.04;
+        // Calculate distance and calories
+        double distanceKm = stepCount * 0.000762; // Average step length ~0.762 meters
+        double caloriesBurned = calculateCalories(stepCount);
+        
         distanceTV.setText(String.format(Locale.getDefault(), "%.2f km", distanceKm));
         caloriesTV.setText(String.format(Locale.getDefault(), "%.0f kcal", caloriesBurned));
 
+        // Save calories to Firebase
+        saveCalories(caloriesBurned);
+
         checkAchievements(stepCount);
+    }
+
+    private double calculateCalories(int steps) {
+        // Average calories burned per step: ~0.04 kcal per step
+        // This is a general estimate and can vary based on weight, pace, etc.
+        return steps * 0.04;
     }
 
     private void saveTodayStepCount() {
         String today = sdf.format(new Date());
         mDatabase.child("daily_logs").child(today).child("steps").setValue(stepCount);
+        // Calories are saved in updateUI() to avoid duplicate saves
+    }
+
+    private void saveCalories(double calories) {
+        String today = sdf.format(new Date());
+        mDatabase.child("daily_logs").child(today).child("calories").setValue(Math.round(calories));
     }
 
     private void loadTodayStepCount() {
@@ -228,6 +258,50 @@ public class StepCounterActivity extends AppCompatActivity implements SensorEven
                 Toast.makeText(StepCounterActivity.this, "Failed to load step data.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void addSteps(int stepsToAdd) {
+        if (stepsToAdd <= 0) {
+            Toast.makeText(this, "Please enter a positive number of steps", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        stepCount += stepsToAdd;
+        updateUI(); // This will update UI and save both steps and calories
+        saveTodayStepCount(); // Save steps to Firebase
+        
+        Toast.makeText(this, String.format(Locale.getDefault(), "Added %,d steps! Calories updated.", stepsToAdd), Toast.LENGTH_SHORT).show();
+    }
+
+    private void showCustomAddStepsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Custom Steps");
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setHint("Enter number of steps");
+        builder.setView(input);
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String stepsStr = input.getText().toString();
+            if (!stepsStr.isEmpty()) {
+                try {
+                    int steps = Integer.parseInt(stepsStr);
+                    if (steps > 0) {
+                        addSteps(steps);
+                    } else {
+                        Toast.makeText(this, "Please enter a positive number", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(this, "Please enter a valid number", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Please enter a number of steps", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     private void checkAchievements(int currentSteps) {
