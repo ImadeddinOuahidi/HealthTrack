@@ -12,13 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:paddingTop="24dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/headerCard"
             style="?attr/materialCardViewFilledStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="20dp"
             app:cardElevation="0dp">
 
@@ -92,9 +94,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:text="Today's Overview"
-            android:textAppearance="?attr/textAppearanceTitleLarge" />
+            android:textAppearance="?attr/textAppearanceTitleLarge"
+            android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/overviewCard"
@@ -102,7 +105,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            app:cardElevation="0dp">
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:id="@+id/overviewLayout"
@@ -110,62 +114,237 @@
                 android:layout_height="wrap_content"
                 android:background="#e6f5f4"
                 android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="20dp">
 
-                <TextView
-                    android:id="@+id/hydrationLabelTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hydration: 1200 / 2000 ml"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/hydrationPB"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="12dp"
-                    android:max="2000"
-                    android:progress="1200"
-                    app:trackCornerRadius="8dp" />
+                    android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/sleepLabelTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sleep: 7.5 hrs / 8 hrs"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textStyle="bold" />
+                    <!-- Hydration Circle -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/hydrationContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toStartOf="@id/sleepContainer"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/sleepPB"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="12dp"
-                    android:max="8"
-                    android:progress="7"
-                    app:indicatorColor="@android:color/holo_purple"
-                    app:trackCornerRadius="8dp" />
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/hydrationPB"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:progress="60"
+                            app:indicatorColor="@color/accentBlue"
+                            app:trackColor="#E0E0E0"
+                            app:trackThickness="12dp"
+                            app:indicatorSize="120dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/stepsLabelTV"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Steps: 8500 / 10000"
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/hydrationPercentTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="60%"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textStyle="bold"
+                            android:textColor="@color/accentBlue"
+                            app:layout_constraintBottom_toTopOf="@id/hydrationIcon"
+                            app:layout_constraintEnd_toEndOf="@id/hydrationPB"
+                            app:layout_constraintStart_toStartOf="@id/hydrationPB"
+                            app:layout_constraintTop_toTopOf="@id/hydrationPB" />
 
-                <com.google.android.material.progressindicator.LinearProgressIndicator
-                    android:id="@+id/stepsPB"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:max="10000"
-                    android:progress="8500"
-                    app:indicatorColor="@android:color/holo_green_light"
-                    app:trackCornerRadius="8dp" />
+                        <ImageView
+                            android:id="@+id/hydrationIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/hydration"
+                            android:layout_marginTop="4dp"
+                            app:tint="@color/accentBlue"
+                            app:layout_constraintBottom_toBottomOf="@id/hydrationPB"
+                            app:layout_constraintEnd_toEndOf="@id/hydrationPB"
+                            app:layout_constraintStart_toStartOf="@id/hydrationPB"
+                            app:layout_constraintTop_toBottomOf="@id/hydrationPercentTV" />
+
+                        <TextView
+                            android:id="@+id/hydrationLabelTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Hydration"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/hydrationPB" />
+
+                        <TextView
+                            android:id="@+id/hydrationValueTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="1200 / 2000 ml"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/hydrationLabelTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Sleep Circle -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/sleepContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        app:layout_constraintEnd_toStartOf="@id/stepsContainer"
+                        app:layout_constraintStart_toEndOf="@id/hydrationContainer"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/sleepPB"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:progress="94"
+                            app:indicatorColor="@color/accentPurple"
+                            app:trackColor="#E0E0E0"
+                            app:trackThickness="12dp"
+                            app:indicatorSize="120dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/sleepPercentTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="94%"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textStyle="bold"
+                            android:textColor="@color/accentPurple"
+                            app:layout_constraintBottom_toTopOf="@id/sleepIcon"
+                            app:layout_constraintEnd_toEndOf="@id/sleepPB"
+                            app:layout_constraintStart_toStartOf="@id/sleepPB"
+                            app:layout_constraintTop_toTopOf="@id/sleepPB" />
+
+                        <ImageView
+                            android:id="@+id/sleepIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/sleep"
+                            android:layout_marginTop="4dp"
+                            app:tint="@color/accentPurple"
+                            app:layout_constraintBottom_toBottomOf="@id/sleepPB"
+                            app:layout_constraintEnd_toEndOf="@id/sleepPB"
+                            app:layout_constraintStart_toStartOf="@id/sleepPB"
+                            app:layout_constraintTop_toBottomOf="@id/sleepPercentTV" />
+
+                        <TextView
+                            android:id="@+id/sleepLabelTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Sleep"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/sleepPB" />
+
+                        <TextView
+                            android:id="@+id/sleepValueTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="7.5 / 8 hrs"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/sleepLabelTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <!-- Steps Circle -->
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/stepsContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/sleepContainer"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.progressindicator.CircularProgressIndicator
+                            android:id="@+id/stepsPB"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"
+                            android:progress="85"
+                            app:indicatorColor="@color/accentGreen"
+                            app:trackColor="#E0E0E0"
+                            app:trackThickness="12dp"
+                            app:indicatorSize="120dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/stepsPercentTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="85%"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textStyle="bold"
+                            android:textColor="@color/accentGreen"
+                            app:layout_constraintBottom_toTopOf="@id/stepsIcon"
+                            app:layout_constraintEnd_toEndOf="@id/stepsPB"
+                            app:layout_constraintStart_toStartOf="@id/stepsPB"
+                            app:layout_constraintTop_toTopOf="@id/stepsPB" />
+
+                        <ImageView
+                            android:id="@+id/stepsIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/footstep"
+                            android:layout_marginTop="4dp"
+                            app:tint="@color/accentGreen"
+                            app:layout_constraintBottom_toBottomOf="@id/stepsPB"
+                            app:layout_constraintEnd_toEndOf="@id/stepsPB"
+                            app:layout_constraintStart_toStartOf="@id/stepsPB"
+                            app:layout_constraintTop_toBottomOf="@id/stepsPercentTV" />
+
+                        <TextView
+                            android:id="@+id/stepsLabelTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:text="Steps"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/stepsPB" />
+
+                        <TextView
+                            android:id="@+id/stepsValueTV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:text="8500 / 10000"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/stepsLabelTV" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

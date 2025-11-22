@@ -9,7 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.card.MaterialCardView;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +27,8 @@ public class DashboardActivity extends AppCompatActivity {
     private MaterialCardView hydrationButton, sleepButton, stepsButton, goalsButton;
     private MaterialCardView focusTimerButton, achievementsButton, reportsButton, notificationsButton;
     private TextView userNameTV, hydrationLabelTV, sleepLabelTV, stepsLabelTV, profileInitialTV;
-    private LinearProgressIndicator hydrationPB, sleepPB, stepsPB;
+    private TextView hydrationPercentTV, hydrationValueTV, sleepPercentTV, sleepValueTV, stepsPercentTV, stepsValueTV;
+    private com.google.android.material.progressindicator.CircularProgressIndicator hydrationPB, sleepPB, stepsPB;
     private ImageButton logoutIBTN;
 
     private FirebaseAuth mAuth;
@@ -55,10 +56,16 @@ public class DashboardActivity extends AppCompatActivity {
         profileInitialTV = findViewById(R.id.profileInitialTV);
         hydrationLabelTV = findViewById(R.id.hydrationLabelTV);
         hydrationPB = findViewById(R.id.hydrationPB);
+        hydrationPercentTV = findViewById(R.id.hydrationPercentTV);
+        hydrationValueTV = findViewById(R.id.hydrationValueTV);
         sleepLabelTV = findViewById(R.id.sleepLabelTV);
         sleepPB = findViewById(R.id.sleepPB);
+        sleepPercentTV = findViewById(R.id.sleepPercentTV);
+        sleepValueTV = findViewById(R.id.sleepValueTV);
         stepsLabelTV = findViewById(R.id.stepsLabelTV);
         stepsPB = findViewById(R.id.stepsPB);
+        stepsPercentTV = findViewById(R.id.stepsPercentTV);
+        stepsValueTV = findViewById(R.id.stepsValueTV);
         logoutIBTN = findViewById(R.id.logoutIBTN);
         hydrationButton = findViewById(R.id.hydrationBTN);
         sleepButton = findViewById(R.id.sleepBTN);
@@ -135,20 +142,38 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void updateHydrationUI(int current, int goal) {
-        hydrationLabelTV.setText(String.format(Locale.getDefault(), "Hydration: %d / %d ml", current, goal));
-        hydrationPB.setMax(goal);
-        hydrationPB.setProgress(current);
+        hydrationLabelTV.setText("Hydration");
+        hydrationValueTV.setText(String.format(Locale.getDefault(), "%d / %d ml", current, goal));
+        
+        int percentage = goal > 0 ? (int) ((current * 100.0f) / goal) : 0;
+        percentage = Math.min(percentage, 100); // Cap at 100%
+        
+        hydrationPercentTV.setText(String.format(Locale.getDefault(), "%d%%", percentage));
+        hydrationPB.setMax(100);
+        hydrationPB.setProgress(percentage, true);
     }
 
     private void updateSleepUI(float current, float goal) {
-        sleepLabelTV.setText(String.format(Locale.getDefault(), "Sleep: %.1f / %.1f hrs", current, goal));
-        sleepPB.setMax((int) (goal * 10));
-        sleepPB.setProgress((int) (current * 10));
+        sleepLabelTV.setText("Sleep");
+        sleepValueTV.setText(String.format(Locale.getDefault(), "%.1f / %.1f hrs", current, goal));
+        
+        int percentage = goal > 0 ? (int) ((current * 100.0f) / goal) : 0;
+        percentage = Math.min(percentage, 100); // Cap at 100%
+        
+        sleepPercentTV.setText(String.format(Locale.getDefault(), "%d%%", percentage));
+        sleepPB.setMax(100);
+        sleepPB.setProgress(percentage, true);
     }
 
     private void updateStepsUI(int current, int goal) {
-        stepsLabelTV.setText(String.format(Locale.getDefault(), "Steps: %d / %d", current, goal));
-        stepsPB.setMax(goal);
-        stepsPB.setProgress(current);
+        stepsLabelTV.setText("Steps");
+        stepsValueTV.setText(String.format(Locale.getDefault(), "%d / %d", current, goal));
+        
+        int percentage = goal > 0 ? (int) ((current * 100.0f) / goal) : 0;
+        percentage = Math.min(percentage, 100); // Cap at 100%
+        
+        stepsPercentTV.setText(String.format(Locale.getDefault(), "%d%%", percentage));
+        stepsPB.setMax(100);
+        stepsPB.setProgress(percentage, true);
     }
 }
