@@ -22,7 +22,7 @@ To test the application with a pre-populated account, please use the following c
 
 ### APK 
 
-
+apk
 
 ### Supported Devices
 
