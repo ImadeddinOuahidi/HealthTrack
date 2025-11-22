@@ -42,12 +42,60 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         holder.description.setText(achievement.getDescription());
         holder.icon.setImageResource(achievement.getIconResId());
 
+        // Set badge based on tier
+        Achievement.BadgeTier tier = achievement.getBadgeTier();
+        int badgeResId = getBadgeResource(tier);
+        holder.badge.setImageResource(badgeResId);
+        
+        // Set badge label text and background
+        String tierName = getTierName(tier);
+        holder.badgeLabel.setText(tierName);
+        holder.badgeLabel.setBackgroundResource(badgeResId);
+
         if (achievement.isUnlocked()) {
             holder.layout.setAlpha(1.0f);
             holder.icon.setImageTintList(null);
+            holder.badge.setAlpha(1.0f);
+            holder.badgeLabel.setAlpha(1.0f);
         } else {
             holder.layout.setAlpha(0.5f);
             holder.icon.setImageTintList(ColorStateList.valueOf(Color.GRAY));
+            holder.badge.setAlpha(0.3f);
+            holder.badgeLabel.setAlpha(0.5f);
+        }
+    }
+
+    private int getBadgeResource(Achievement.BadgeTier tier) {
+        switch (tier) {
+            case BRONZE:
+                return R.drawable.badge_bronze;
+            case SILVER:
+                return R.drawable.badge_silver;
+            case GOLD:
+                return R.drawable.badge_gold;
+            case PLATINUM:
+                return R.drawable.badge_platinum;
+            case DIAMOND:
+                return R.drawable.badge_diamond;
+            default:
+                return R.drawable.badge_bronze;
+        }
+    }
+
+    private String getTierName(Achievement.BadgeTier tier) {
+        switch (tier) {
+            case BRONZE:
+                return "BRONZE";
+            case SILVER:
+                return "SILVER";
+            case GOLD:
+                return "GOLD";
+            case PLATINUM:
+                return "PLATINUM";
+            case DIAMOND:
+                return "DIAMOND";
+            default:
+                return "BRONZE";
         }
     }
 
@@ -57,15 +105,17 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
     }
 
     static class AchievementViewHolder extends RecyclerView.ViewHolder {
-        ImageView icon;
-        TextView title, description;
+        ImageView icon, badge;
+        TextView title, description, badgeLabel;
         LinearLayout layout;
 
         public AchievementViewHolder(@NonNull View itemView) {
             super(itemView);
             icon = itemView.findViewById(R.id.achievement_icon);
+            badge = itemView.findViewById(R.id.achievement_badge);
             title = itemView.findViewById(R.id.achievement_title);
             description = itemView.findViewById(R.id.achievement_description);
+            badgeLabel = itemView.findViewById(R.id.achievement_badge_label);
             layout = itemView.findViewById(R.id.achievement_layout);
         }
     }
