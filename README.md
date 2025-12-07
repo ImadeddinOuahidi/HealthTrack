@@ -47,3 +47,15 @@ The application follows a logical and intuitive user flow:
 
 4.  **Firebase Integration:** All user data, including profile information, daily logs, goals, and settings, is stored in real-time in the Firebase Realtime Database, ensuring data is always synced across devices.
 
+| Feature                               | Status       |
+| :------------------------------------ | :----------- |
+| User Authentication (Email/Password)  | ✅ Complete  |
+| Dashboard with Daily Overview         | ✅ Complete  |
+| Hydration Tracking & Daily Graph      | ✅ Complete  |
+| Sleep Logging & Weekly Graph          | ✅ Complete  |
+| Automatic Step Counting & Weekly Graph| ✅ Complete  |
+| Customizable Goal Setting             | ✅ Complete  |
+| Gamified Achievement System           | ✅ Complete  |
+| 30-Day Trend Reports                  | ✅ Complete  |
+| Customizable Notification System      | ✅ Complete  |
+| Relaxation & Focus Timer              | ✅ Complete  |
